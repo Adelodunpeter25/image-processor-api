@@ -39,7 +39,7 @@ def get_user_from_api_key(api_key):
         key.increment_usage()
         try:
             db.session.commit()
-        except:
+        except Exception:
             db.session.rollback()  # Don't fail request if usage tracking fails
         
         return User.query.get(key.user_id)

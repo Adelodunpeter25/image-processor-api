@@ -83,7 +83,7 @@ def rate_limit_by_auth():
                     allowed, error_msg = check_rate_limit(f"jwt_{user_id}", JWT_LIMITS, is_api_key=False)
                     if not allowed:
                         return jsonify({'error': error_msg}), 429
-                except:
+                except Exception:
                     # If no JWT, rate limit by IP (fallback)
                     ip = request.remote_addr
                     allowed, error_msg = check_rate_limit(f"ip_{ip}", JWT_LIMITS, is_api_key=False)

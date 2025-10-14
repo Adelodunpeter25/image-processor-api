@@ -116,7 +116,7 @@ def get_thumbnail(image_id):
             if width < 1 or height < 1 or width > 1000 or height > 1000:
                 return jsonify({'error': 'Thumbnail size must be between 1x1 and 1000x1000'}), 400
             size = (width, height)
-        except:
+        except (ValueError, AttributeError):
             return jsonify({'error': 'Invalid size format. Use format: WIDTHxHEIGHT (e.g., 150x150)'}), 400
         
         # Get image path (download if URL)

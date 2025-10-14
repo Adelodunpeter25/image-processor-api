@@ -59,7 +59,7 @@ def home():
     """Serve as the home route."""
     return jsonify({
         "title": "Image Processor API", 
-        "description": "API for image upload, background removal, transformation, and management"
+        "description": "API for image upload, background removal, transformation, and management",
         "documentation": "/docs"
     })
 

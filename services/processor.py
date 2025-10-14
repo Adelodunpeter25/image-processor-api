@@ -93,7 +93,7 @@ class ImageProcessor:
                 font_size = max(20, img_width // 20)
                 try:
                     font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", font_size)
-                except:
+                except (OSError, IOError):
                     font = ImageFont.load_default()
                 
                 bbox = draw.textbbox((0, 0), watermark_text, font=font)
