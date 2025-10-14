@@ -5,6 +5,10 @@ from datetime import datetime
 class Image(db.Model):
     """Image model with metadata and user relationship."""
     __tablename__ = 'images'
+    __table_args__ = (
+        db.Index('idx_user_id', 'user_id'),
+        db.Index('idx_user_created', 'user_id', 'created_at'),
+    )
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
