@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required
 from models.user import db
 from models.image import Image
 from middleware.auth import get_current_user
+from middleware.api_auth import api_key_or_jwt_required
 from services.storage import StorageService
 from services.processor import ImageProcessor
 import os
@@ -15,7 +16,7 @@ def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 @upload_bp.route('/upload', methods=['POST'])
-@jwt_required()
+@api_key_or_jwt_required
 def upload_image():
     """Upload an image file."""
     try:

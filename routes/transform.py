@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required
 from models.image import Image
 from models.user import db
 from middleware.auth import get_current_user
+from middleware.api_auth import api_key_or_jwt_required
 from services.processor import ImageProcessor
 import os
 import requests
@@ -16,7 +17,7 @@ def is_url(path):
     return path.startswith('http://') or path.startswith('https://')
 
 @transform_bp.route('/<int:image_id>', methods=['GET'])
-@jwt_required()
+@api_key_or_jwt_required
 def get_image(image_id):
     """Retrieve original image by ID."""
     try:
@@ -39,7 +40,7 @@ def get_image(image_id):
         return jsonify({'error': 'Failed to retrieve image', 'message': str(e)}), 500
 
 @transform_bp.route('/<int:image_id>/transform', methods=['GET'])
-@jwt_required()
+@api_key_or_jwt_required
 def transform_image(image_id):
     """Apply transformations to an image."""
     try:
@@ -103,7 +104,7 @@ def transform_image(image_id):
         return jsonify({'error': 'Transformation failed', 'message': str(e)}), 500
 
 @transform_bp.route('/<int:image_id>/thumbnail', methods=['GET'])
-@jwt_required()
+@api_key_or_jwt_required
 def get_thumbnail(image_id):
     """Generate thumbnail for an image."""
     try:
@@ -137,7 +138,7 @@ def get_thumbnail(image_id):
         return jsonify({'error': 'Thumbnail generation failed', 'message': str(e)}), 500
 
 @transform_bp.route('/<int:image_id>', methods=['DELETE'])
-@jwt_required()
+@api_key_or_jwt_required
 def delete_image(image_id):
     """Delete an image and its file."""
     try:
@@ -161,7 +162,7 @@ def delete_image(image_id):
         return jsonify({'error': 'Delete failed', 'message': str(e)}), 500
 
 @transform_bp.route('/<int:image_id>/remove-background', methods=['GET'])
-@jwt_required()
+@api_key_or_jwt_required
 def remove_background(image_id):
     """Remove background from an image."""
     try:
@@ -192,7 +193,7 @@ def remove_background(image_id):
         return jsonify({'error': 'Background removal failed', 'message': str(e)}), 500
 
 @transform_bp.route('', methods=['GET'])
-@jwt_required()
+@api_key_or_jwt_required
 def list_images():
     """List all images for the authenticated user."""
     try:

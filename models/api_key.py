@@ -7,15 +7,20 @@ class APIKey(db.Model):
     """API Key model for user authentication."""
     
     __tablename__ = 'api_keys'
+    __table_args__ = (
+        db.Index('idx_prefix_active', 'prefix', 'is_active'),
+        db.Index('idx_user_active', 'user_id', 'is_active'),
+    )
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     key_hash = db.Column(db.String(255), nullable=False)
     prefix = db.Column(db.String(20), nullable=False)  # For display (e.g., "sk_live_...abc")
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_used = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=True)
+    request_count = db.Column(db.Integer, default=0)  # Track total requests
     
     def __repr__(self):
         return f'<APIKey {self.name} - {self.prefix}>'
@@ -27,3 +32,8 @@ class APIKey(db.Model):
     def check_key(self, key):
         """Verify API key."""
         return check_password_hash(self.key_hash, key)
+    
+    def increment_usage(self):
+        """Increment request count and update last used."""
+        self.request_count += 1
+        self.last_used = datetime.utcnow()

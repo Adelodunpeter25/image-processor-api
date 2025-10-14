@@ -16,6 +16,12 @@
       "name": "Authorization",
       "in": "header",
       "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'"
+    },
+    "ApiKey": {
+      "type": "apiKey",
+      "name": "X-API-Key",
+      "in": "header",
+      "description": "API Key for authentication. Example: 'sk_live_abc123...'"
     }
   },
   "paths": {
@@ -104,11 +110,58 @@
         }
       }
     },
+    "/auth/api-keys": {
+      "post": {
+        "tags": ["API Keys"],
+        "summary": "Generate new API key",
+        "security": [{"Bearer": []}, {"ApiKey": []}],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": {"type": "string", "example": "Production Server"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {"description": "API key created successfully"},
+          "400": {"description": "Invalid request"}
+        }
+      },
+      "get": {
+        "tags": ["API Keys"],
+        "summary": "List all API keys",
+        "security": [{"Bearer": []}, {"ApiKey": []}],
+        "responses": {
+          "200": {"description": "List of API keys"}
+        }
+      }
+    },
+    "/auth/api-keys/{key_id}": {
+      "delete": {
+        "tags": ["API Keys"],
+        "summary": "Revoke API key",
+        "security": [{"Bearer": []}, {"ApiKey": []}],
+        "parameters": [
+          {"in": "path", "name": "key_id", "type": "integer", "required": true}
+        ],
+        "responses": {
+          "200": {"description": "API key revoked"},
+          "404": {"description": "API key not found"}
+        }
+      }
+    },
     "/images/upload": {
       "post": {
         "tags": ["Images"],
         "summary": "Upload an image",
-        "security": [{ "Bearer": [] }],
+        "security": [{ "Bearer": [] }, { "ApiKey": [] }],
         "consumes": ["multipart/form-data"],
         "parameters": [
           {
@@ -130,7 +183,7 @@
       "get": {
         "tags": ["Images"],
         "summary": "Get original image",
-        "security": [{ "Bearer": [] }],
+        "security": [{ "Bearer": [] }, { "ApiKey": [] }],
         "parameters": [
           { "in": "path", "name": "image_id", "type": "integer", "required": true },
           { "in": "query", "name": "download", "type": "boolean", "default": false }
@@ -143,7 +196,7 @@
       "delete": {
         "tags": ["Images"],
         "summary": "Delete an image",
-        "security": [{ "Bearer": [] }],
+        "security": [{ "Bearer": [] }, { "ApiKey": [] }],
         "parameters": [
           { "in": "path", "name": "image_id", "type": "integer", "required": true }
         ],
@@ -157,7 +210,7 @@
       "get": {
         "tags": ["Images"],
         "summary": "Transform an image",
-        "security": [{ "Bearer": [] }],
+        "security": [{ "Bearer": [] }, { "ApiKey": [] }],
         "parameters": [
           { "in": "path", "name": "image_id", "type": "integer", "required": true },
           { "in": "query", "name": "width", "type": "integer" },
@@ -186,7 +239,7 @@
       "get": {
         "tags": ["Images"],
         "summary": "Generate thumbnail",
-        "security": [{ "Bearer": [] }],
+        "security": [{ "Bearer": [] }, { "ApiKey": [] }],
         "parameters": [
           { "in": "path", "name": "image_id", "type": "integer", "required": true },
           { "in": "query", "name": "size", "type": "string", "default": "150x150" },
@@ -202,7 +255,7 @@
       "get": {
         "tags": ["Images"],
         "summary": "Remove background from image",
-        "security": [{ "Bearer": [] }],
+        "security": [{ "Bearer": [] }, { "ApiKey": [] }],
         "parameters": [
           { "in": "path", "name": "image_id", "type": "integer", "required": true },
           { "in": "query", "name": "format", "type": "string", "enum": ["png", "webp"] },
@@ -218,7 +271,7 @@
       "get": {
         "tags": ["Images"],
         "summary": "List all user images",
-        "security": [{ "Bearer": [] }],
+        "security": [{ "Bearer": [] }, { "ApiKey": [] }],
         "responses": {
           "200": { "description": "List of images" }
         }
@@ -228,7 +281,7 @@
       "post": {
         "tags": ["Batch Processing"],
         "summary": "Upload multiple images at once",
-        "security": [{"Bearer": []}],
+        "security": [{"Bearer": []}, {"ApiKey": []}],
         "consumes": ["multipart/form-data"],
         "parameters": [
           {"in": "formData", "name": "files", "type": "file", "required": true, "description": "Multiple image files (max 10)"}
@@ -243,7 +296,7 @@
       "post": {
         "tags": ["Batch Processing"],
         "summary": "Apply same transformation to multiple images",
-        "security": [{"Bearer": []}],
+        "security": [{"Bearer": []}, {"ApiKey": []}],
         "parameters": [
           {"in": "body", "name": "body", "required": true, "schema": {
             "type": "object",
@@ -273,7 +326,7 @@
       "post": {
         "tags": ["Batch Processing"],
         "summary": "Remove background from multiple images",
-        "security": [{"Bearer": []}],
+        "security": [{"Bearer": []}, {"ApiKey": []}],
         "parameters": [
           {"in": "body", "name": "body", "required": true, "schema": {
             "type": "object",

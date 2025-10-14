@@ -7,8 +7,6 @@ image upload, background removal and transformation capabilities.
 import os
 from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -30,7 +28,7 @@ CORS(app, resources={
     r"/api/*": {
         "origins": "*",
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
+        "allow_headers": ["Content-Type", "Authorization", "X-API-Key"],
         "expose_headers": ["Content-Disposition"]
     }
 })
@@ -38,12 +36,6 @@ CORS(app, resources={
 # Initialize extensions
 db.init_app(app)
 jwt = JWTManager(app)
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["200 per day", "60 per hour", "30 per minute"],
-    storage_uri="memory://"
-)
 
 # Swagger UI configuration
 SWAGGER_URL = '/docs'
@@ -84,11 +76,13 @@ from routes.auth import auth_bp
 from routes.upload import upload_bp
 from routes.transform import transform_bp
 from routes.batch import batch_bp
+from routes.api_keys import api_keys_bp
 
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(upload_bp, url_prefix='/api/images')
 app.register_blueprint(transform_bp, url_prefix='/api/images')
 app.register_blueprint(batch_bp, url_prefix='/api/batch')
+app.register_blueprint(api_keys_bp, url_prefix='/api/auth/api-keys')
 
 # Global error handlers
 @app.errorhandler(400)
@@ -123,6 +117,8 @@ def internal_error(e):
 
 # Initialize database
 with app.app_context():
+    # Import models to ensure they're registered
+    from models.api_key import APIKey
     db.create_all()
 
 if __name__ == '__main__':

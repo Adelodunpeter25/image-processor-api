@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required
 from models.image import Image
 from models.user import db
 from middleware.auth import get_current_user
+from middleware.api_auth import api_key_or_jwt_required
 from services.processor import ImageProcessor
 from services.storage import StorageService
 from werkzeug.utils import secure_filename
@@ -29,7 +30,7 @@ def is_url(path):
     return path.startswith('http://') or path.startswith('https://')
 
 @batch_bp.route('/upload', methods=['POST'])
-@jwt_required()
+@api_key_or_jwt_required
 def batch_upload():
     """Upload multiple images at once."""
     try:
@@ -97,7 +98,7 @@ def batch_upload():
         return jsonify({'error': 'Batch upload failed', 'message': str(e)}), 500
 
 @batch_bp.route('/transform', methods=['POST'])
-@jwt_required()
+@api_key_or_jwt_required
 def batch_transform():
     """Apply same transformation to multiple images."""
     try:
@@ -171,7 +172,7 @@ def batch_transform():
         return jsonify({'error': 'Batch transformation failed', 'message': str(e)}), 500
 
 @batch_bp.route('/remove-background', methods=['POST'])
-@jwt_required()
+@api_key_or_jwt_required
 def batch_remove_background():
     """Remove background from multiple images."""
     try:

@@ -5,6 +5,7 @@ A Flask-based image processing service with user authentication, image upload, b
 ## Features
 
 - **User Authentication**: JWT-based authentication with registration and login
+- **API Key Support**: Generate API keys for programmatic access
 - **Image Upload**: Support for PNG, JPG, JPEG, GIF, WEBP formats (max 16MB)
 - **Image Transformations**:
   - Resize (width/height)
@@ -107,7 +108,22 @@ curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"user@example.com","password":"password123"}'
 
-# Upload (use token from login)
+# Generate API Key (use token from login)
+curl -X POST http://localhost:5000/api/auth/api-keys \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Production Server"}'
+
+# List API Keys
+curl http://localhost:5000/api/auth/api-keys \
+  -H "Authorization: Bearer <token>"
+
+# Upload with API Key (no JWT needed!)
+curl -X POST http://localhost:5000/api/images/upload \
+  -H "X-API-Key: sk_live_abc123..." \
+  -F "file=@image.jpg"
+
+# Upload with JWT (traditional way)
 curl -X POST http://localhost:5000/api/images/upload \
   -H "Authorization: Bearer <token>" \
   -F "file=@image.jpg"
