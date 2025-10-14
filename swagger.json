@@ -35,6 +35,25 @@
         }
       }
     },
+    "/health": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Health check endpoint",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {"type": "string", "example": "healthy"},
+                "service": {"type": "string", "example": "Image Processor API"},
+                "environment": {"type": "string", "example": "development"}
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/register": {
       "post": {
         "tags": ["Authentication"],

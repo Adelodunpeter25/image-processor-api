@@ -54,10 +54,19 @@ def swagger_spec():
 @app.route('/', methods=['GET', 'HEAD'])
 def home():
     """Serve as the home route."""
-    return {
+    return jsonify({
         "message": "Image Processor API", 
-        "status": "running"
-        }
+        "description": "API for image upload, background removal, transformation, and management"
+        })
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint."""
+    return jsonify({
+        "status": "healthy",
+        "service": "Image Processor API",
+        "environment": ENV
+    }), 200
 
 # Register blueprints
 from routes.auth import auth_bp

@@ -1,6 +1,6 @@
 # Image Processor API
 
-A Flask-based image processing service with user authentication, image upload, and transformation capabilities.
+A Flask-based image processing service with user authentication, image upload, background removal, and transformation capabilities.
 
 ## Features
 
@@ -14,8 +14,9 @@ A Flask-based image processing service with user authentication, image upload, a
   - Format conversion (JPEG, PNG, WebP)
   - Grayscale filter
   - Quality enhancement (sharpness, contrast, color)
-  - Aggressive compression
+  - Size-based compression
 - **Background Removal**: AI-powered background removal
+- **Configurable**: Environment-based configuration support
 - **Thumbnail Generation**: Custom size thumbnails
 - **Rate Limiting**: Protection against abuse
 - **API Documentation**: Interactive Swagger UI
@@ -72,27 +73,7 @@ The Swagger UI provides:
 - Interactive testing interface
 - Authentication support
 
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login and get JWT token
-
-### Images
-- `POST /api/images/upload` - Upload image
-- `GET /api/images/<id>` - Get original image
-- `GET /api/images/<id>/transform` - Get transformed image
-- `GET /api/images/<id>/thumbnail` - Get thumbnail
-- `GET /api/images/<id>/remove-background` - Remove background from image
-- `DELETE /api/images/<id>` - Delete image
-- `GET /api/images` - List all user images
-
-### Batch Processing
-- `POST /api/batch/upload` - Upload multiple images (max 10)
-- `POST /api/batch/transform` - Apply same transformation to multiple images
-- `POST /api/batch/remove-background` - Remove background from multiple images
-
-### Transform Parameters
+## Transform Parameters
 - `width` - Resize width
 - `height` - Resize height
 - `format` - Output format (jpeg, png, webp)
@@ -105,7 +86,7 @@ The Swagger UI provides:
 - `watermark` - Watermark text to add to image
 - `optimize` - Enable both enhancement and compression (true/false)
 - `enhance` - Enhance image quality only - sharpness, contrast, color (true/false)
-- `compress` - Reduce file size only - aggressive compression (true/false)
+- `compress` - Reduce file size only - size-based compression (true/false)
 - `grayscale` - Convert to grayscale (true/false)
 - `download` - Force download instead of display (true/false)
 
