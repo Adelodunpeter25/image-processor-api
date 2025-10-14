@@ -10,6 +10,7 @@ from flask_jwt_extended import JWTManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from models.user import db
@@ -23,6 +24,16 @@ app.config.from_object(Config)
 # Get environment
 ENV = os.getenv('FLASK_ENV', 'development')
 DEBUG = ENV == 'development'
+
+# Initialize CORS
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "expose_headers": ["Content-Disposition"]
+    }
+})
 
 # Initialize extensions
 db.init_app(app)
