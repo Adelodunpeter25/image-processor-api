@@ -20,6 +20,17 @@ pip install -r requirements.txt
 python main.py
 ```
 
+## API Documentation
+
+Interactive API documentation is available at:
+- **Swagger UI**: http://localhost:5000/docs
+
+The Swagger UI provides:
+- Complete API endpoint documentation
+- Request/response schemas
+- Interactive testing interface
+- Authentication support
+
 ## API Endpoints
 
 ### Authentication

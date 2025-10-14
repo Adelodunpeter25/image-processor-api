@@ -1,3 +1,4 @@
+"""Image transformation and retrieval routes."""
 from flask import Blueprint, request, jsonify, send_file
 from flask_jwt_extended import jwt_required
 from models.image import Image
@@ -10,6 +11,28 @@ transform_bp = Blueprint('transform', __name__)
 @transform_bp.route('/<int:image_id>', methods=['GET'])
 @jwt_required()
 def get_image(image_id):
+    """
+    Retrieve original image by ID.
+    ---
+    tags:
+      - Images
+    security:
+      - Bearer: []
+    parameters:
+      - in: path
+        name: image_id
+        type: integer
+        required: true
+    responses:
+      200:
+        description: Image file
+      401:
+        description: Unauthorized
+      404:
+        description: Image not found
+      500:
+        description: Server error
+    """
     try:
         user = get_current_user()
         image = Image.query.filter_by(id=image_id, user_id=user.id).first()
@@ -24,6 +47,83 @@ def get_image(image_id):
 @transform_bp.route('/<int:image_id>/transform', methods=['GET'])
 @jwt_required()
 def transform_image(image_id):
+    """
+    Apply transformations to an image.
+    ---
+    tags:
+      - Images
+    security:
+      - Bearer: []
+    parameters:
+      - in: path
+        name: image_id
+        type: integer
+        required: true
+      - in: query
+        name: width
+        type: integer
+        description: Resize width
+      - in: query
+        name: height
+        type: integer
+        description: Resize height
+      - in: query
+        name: format
+        type: string
+        enum: [jpeg, png, webp]
+        description: Output format
+      - in: query
+        name: quality
+        type: integer
+        default: 85
+        description: Image quality (1-100)
+      - in: query
+        name: crop_x
+        type: integer
+        description: Crop starting X coordinate
+      - in: query
+        name: crop_y
+        type: integer
+        description: Crop starting Y coordinate
+      - in: query
+        name: crop_width
+        type: integer
+        description: Crop width
+      - in: query
+        name: crop_height
+        type: integer
+        description: Crop height
+      - in: query
+        name: rotate
+        type: integer
+        enum: [90, 180, 270, -90, -180, -270]
+        description: Rotation angle
+      - in: query
+        name: watermark
+        type: string
+        description: Watermark text
+      - in: query
+        name: optimize
+        type: boolean
+        description: Enable optimization
+      - in: query
+        name: grayscale
+        type: boolean
+        description: Convert to grayscale
+    responses:
+      200:
+        description: Transformed image
+      400:
+        description: Validation error
+      401:
+        description: Unauthorized
+      404:
+        description: Image not found
+      429:
+        description: Rate limit exceeded
+      500:
+        description: Server error
+    """
     try:
         from main import limiter
         limiter.limit("20 per minute")(lambda: None)()
@@ -75,6 +175,35 @@ def transform_image(image_id):
 @transform_bp.route('/<int:image_id>/thumbnail', methods=['GET'])
 @jwt_required()
 def get_thumbnail(image_id):
+    """
+    Generate thumbnail for an image.
+    ---
+    tags:
+      - Images
+    security:
+      - Bearer: []
+    parameters:
+      - in: path
+        name: image_id
+        type: integer
+        required: true
+      - in: query
+        name: size
+        type: string
+        default: 150x150
+        description: Thumbnail size (e.g., 150x150, 200x200)
+    responses:
+      200:
+        description: Thumbnail image
+      400:
+        description: Validation error
+      401:
+        description: Unauthorized
+      404:
+        description: Image not found
+      500:
+        description: Server error
+    """
     try:
         user = get_current_user()
         image = Image.query.filter_by(id=image_id, user_id=user.id).first()
@@ -100,6 +229,33 @@ def get_thumbnail(image_id):
 @transform_bp.route('/<int:image_id>', methods=['DELETE'])
 @jwt_required()
 def delete_image(image_id):
+    """
+    Delete an image and its file.
+    ---
+    tags:
+      - Images
+    security:
+      - Bearer: []
+    parameters:
+      - in: path
+        name: image_id
+        type: integer
+        required: true
+    responses:
+      200:
+        description: Image deleted successfully
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+      401:
+        description: Unauthorized
+      404:
+        description: Image not found
+      500:
+        description: Server error
+    """
     try:
         user = get_current_user()
         image = Image.query.filter_by(id=image_id, user_id=user.id).first()
@@ -123,6 +279,43 @@ def delete_image(image_id):
 @transform_bp.route('', methods=['GET'])
 @jwt_required()
 def list_images():
+    """
+    List all images for the authenticated user.
+    ---
+    tags:
+      - Images
+    security:
+      - Bearer: []
+    responses:
+      200:
+        description: List of images
+        schema:
+          type: object
+          properties:
+            images:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  filename:
+                    type: string
+                  format:
+                    type: string
+                  width:
+                    type: integer
+                  height:
+                    type: integer
+                  size:
+                    type: integer
+                  created_at:
+                    type: string
+      401:
+        description: Unauthorized
+      500:
+        description: Server error
+    """
     try:
         user = get_current_user()
         images = Image.query.filter_by(user_id=user.id).all()
