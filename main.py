@@ -58,7 +58,7 @@ def swagger_spec():
 def home():
     """Serve as the home route."""
     return jsonify({
-        "message": "Image Processor API", 
+        "title": "Image Processor API", 
         "description": "API for image upload, background removal, transformation, and management"
         })
 
