@@ -4,16 +4,25 @@ Image Processor API - Main application entry point.
 A Flask-based image processing service with user authentication,
 image upload, background removal and transformation capabilities.
 """
+import os
 from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_swagger_ui import get_swaggerui_blueprint
+from dotenv import load_dotenv
 from config import Config
 from models.user import db
 
+# Load environment variables
+load_dotenv()
+
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# Get environment
+ENV = os.getenv('FLASK_ENV', 'development')
+DEBUG = ENV == 'development'
 
 # Initialize extensions
 db.init_app(app)
@@ -95,4 +104,9 @@ with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    if ENV == 'production':
+        print(f"🚀 Starting in PRODUCTION mode")
+        app.run(host='0.0.0.0', port=5000, debug=False)
+    else:
+        print(f"🔧 Starting in DEVELOPMENT mode")
+        app.run(host='0.0.0.0', port=5000, debug=True)

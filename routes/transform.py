@@ -1,12 +1,19 @@
 """Image transformation and retrieval routes."""
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, jsonify, send_file, redirect
 from flask_jwt_extended import jwt_required
 from models.image import Image
 from models.user import db
 from middleware.auth import get_current_user
 from services.processor import ImageProcessor
+import os
+import requests
+from io import BytesIO
 
 transform_bp = Blueprint('transform', __name__)
+
+def is_url(path):
+    """Check if path is a URL."""
+    return path.startswith('http://') or path.startswith('https://')
 
 @transform_bp.route('/<int:image_id>', methods=['GET'])
 @jwt_required()
@@ -20,6 +27,12 @@ def get_image(image_id):
             return jsonify({'error': 'Image not found'}), 404
         
         download = request.args.get('download', default='false').lower() == 'true'
+        
+        # If it's a URL (Supabase), redirect to it
+        if is_url(image.original_path):
+            return redirect(image.original_path)
+        
+        # Otherwise serve local file
         download_name = f"{image.filename}" if download else None
         return send_file(image.original_path, mimetype=f'image/{image.format}', as_attachment=download, download_name=download_name)
     except Exception as e:
@@ -71,8 +84,15 @@ def transform_image(image_id):
         if rotate and rotate not in [90, 180, 270, -90, -180, -270]:
             return jsonify({'error': 'Rotate must be 90, 180, or 270 degrees'}), 400
         
+        # Get image path (download if URL)
+        image_path = image.original_path
+        if is_url(image_path):
+            # Download from Supabase to process
+            response = requests.get(image_path)
+            image_path = BytesIO(response.content)
+        
         buffer, output_format = ImageProcessor.transform_image(
-            image.original_path, width, height, format, quality,
+            image_path, width, height, format, quality,
             crop_x, crop_y, crop_width, crop_height, optimize, enhance, compress, 
             rotate, watermark_text, grayscale
         )
@@ -103,7 +123,13 @@ def get_thumbnail(image_id):
         except:
             return jsonify({'error': 'Invalid size format. Use format: WIDTHxHEIGHT (e.g., 150x150)'}), 400
         
-        buffer, output_format = ImageProcessor.generate_thumbnail(image.original_path, size)
+        # Get image path (download if URL)
+        image_path = image.original_path
+        if is_url(image_path):
+            response = requests.get(image_path)
+            image_path = BytesIO(response.content)
+        
+        buffer, output_format = ImageProcessor.generate_thumbnail(image_path, size)
         
         download_name = f"thumbnail_{image_id}_{size_param}.{output_format}" if download else None
         return send_file(buffer, mimetype=f'image/{output_format}', as_attachment=download, download_name=download_name)
@@ -152,7 +178,13 @@ def remove_background(image_id):
         if format and format.lower() not in ['png', 'webp']:
             return jsonify({'error': 'Invalid format. Recommended: png (for transparency)'}), 400
         
-        buffer, output_format = ImageProcessor.remove_background(image.original_path, format)
+        # Get image path (download if URL)
+        image_path = image.original_path
+        if is_url(image_path):
+            response = requests.get(image_path)
+            image_path = BytesIO(response.content)
+        
+        buffer, output_format = ImageProcessor.remove_background(image_path, format)
         
         download_name = f"no_bg_{image_id}.{output_format}" if download else None
         return send_file(buffer, mimetype=f'image/{output_format}', as_attachment=download, download_name=download_name)

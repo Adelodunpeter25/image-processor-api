@@ -33,10 +33,33 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. Run the application:
+3. Create .env file:
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and set your configuration:
+```
+FLASK_ENV=development  # or production
+SECRET_KEY=your-secret-key
+JWT_SECRET_KEY=your-jwt-secret-key
+
+# For production with Supabase storage:
+PROJECT_URL=your-supabase-project-url
+SERVICE_ROLE=your-supabase-service-role-key
+SUPABASE_BUCKET=images
+```
+
+**Note**: In production mode, images are stored in Supabase Storage. In development, they're stored locally in the `uploads/` folder.
+
+4. Run the application:
 ```bash
 python main.py
 ```
+
+The app will start in the mode specified in `.env`:
+- **Development**: Debug mode enabled, auto-reload on code changes
+- **Production**: Debug mode disabled, optimized for deployment
 
 ## API Documentation
 
@@ -138,3 +161,9 @@ curl "http://localhost:5000/api/images/1/remove-background?format=png&download=t
   -H "Authorization: Bearer <token>" \
   --output no_background.png
 ```
+
+---
+
+## Project Reference
+
+This project is modeled after the [Image Processing Service](https://roadmap.sh/projects/image-processing-service) project from [roadmap.sh](https://roadmap.sh).

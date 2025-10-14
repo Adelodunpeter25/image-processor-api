@@ -34,7 +34,7 @@ class ImageProcessor:
         Apply transformations to an image.
         
         Args:
-            filepath: Path to the original image
+            filepath: Path to the original image or BytesIO object
             width: Target width for resize
             height: Target height for resize
             format: Output format (jpeg, png, webp)
@@ -150,7 +150,7 @@ class ImageProcessor:
         Generate thumbnail from image.
         
         Args:
-            filepath: Path to the original image
+            filepath: Path to the original image or BytesIO object
             size: Tuple of (width, height) for thumbnail
             
         Returns:
@@ -169,15 +169,21 @@ class ImageProcessor:
         Remove background from image.
         
         Args:
-            filepath: Path to the original image
+            filepath: Path to the original image or BytesIO object
             format: Output format (png recommended for transparency)
             
         Returns:
             tuple: (BytesIO buffer, output_format)
         """
-        with open(filepath, 'rb') as input_file:
-            input_data = input_file.read()
-            output_data = remove(input_data)
+        # Handle both file paths and BytesIO objects
+        if isinstance(filepath, io.BytesIO):
+            input_data = filepath.read()
+            filepath.seek(0)
+        else:
+            with open(filepath, 'rb') as input_file:
+                input_data = input_file.read()
+        
+        output_data = remove(input_data)
         
         # Convert to PIL Image to handle format
         img = Image.open(io.BytesIO(output_data))
