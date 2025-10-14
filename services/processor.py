@@ -1,5 +1,6 @@
 """Image processing service for transformations and manipulations."""
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance
+from rembg import remove
 import io
 
 class ImageProcessor:
@@ -27,7 +28,8 @@ class ImageProcessor:
     @staticmethod
     def transform_image(filepath, width=None, height=None, format=None, quality=85, 
                        crop_x=None, crop_y=None, crop_width=None, crop_height=None, 
-                       optimize=False, rotate=None, watermark_text=None, grayscale=False):
+                       optimize=False, enhance=False, compress=False, 
+                       rotate=None, watermark_text=None, grayscale=False):
         """
         Apply transformations to an image.
         
@@ -41,7 +43,9 @@ class ImageProcessor:
             crop_y: Crop starting Y coordinate
             crop_width: Crop width
             crop_height: Crop height
-            optimize: Enable optimization
+            optimize: Enable both enhancement and compression (legacy)
+            enhance: Enhance image quality (sharpness, contrast, color)
+            compress: Reduce file size aggressively
             rotate: Rotation angle in degrees
             watermark_text: Text to add as watermark
             grayscale: Convert to grayscale
@@ -102,12 +106,38 @@ class ImageProcessor:
                 
                 draw.text((x, y), watermark_text, fill=(255, 255, 255, 128), font=font)
             
+            # Apply quality enhancements
+            if optimize or enhance:
+                # Enhance sharpness
+                enhancer = ImageEnhance.Sharpness(img)
+                img = enhancer.enhance(1.2)
+                
+                # Enhance contrast slightly
+                enhancer = ImageEnhance.Contrast(img)
+                img = enhancer.enhance(1.1)
+                
+                # Enhance color
+                enhancer = ImageEnhance.Color(img)
+                img = enhancer.enhance(1.05)
+            
             # Save to buffer
             output_format = format.upper() if format else img.format
             buffer = io.BytesIO()
             
-            if optimize:
-                img.save(buffer, format=output_format, quality=quality, optimize=True)
+            # Apply compression
+            if optimize or compress:
+                # Aggressive compression with reduced quality for smaller files
+                save_quality = quality if quality != 85 else 65
+                
+                if output_format in ['JPEG', 'JPG']:
+                    img.save(buffer, format=output_format, quality=save_quality, optimize=True, 
+                            progressive=True, subsampling='4:2:0')
+                elif output_format == 'PNG':
+                    img.save(buffer, format=output_format, optimize=True, compress_level=9)
+                elif output_format == 'WEBP':
+                    img.save(buffer, format=output_format, quality=save_quality, method=6, lossless=False)
+                else:
+                    img.save(buffer, format=output_format, quality=save_quality, optimize=True)
             else:
                 img.save(buffer, format=output_format, quality=quality)
             
@@ -132,3 +162,29 @@ class ImageProcessor:
             img.save(buffer, format=img.format, quality=85)
             buffer.seek(0)
             return buffer, img.format.lower()
+    
+    @staticmethod
+    def remove_background(filepath, format=None):
+        """
+        Remove background from image.
+        
+        Args:
+            filepath: Path to the original image
+            format: Output format (png recommended for transparency)
+            
+        Returns:
+            tuple: (BytesIO buffer, output_format)
+        """
+        with open(filepath, 'rb') as input_file:
+            input_data = input_file.read()
+            output_data = remove(input_data)
+        
+        # Convert to PIL Image to handle format
+        img = Image.open(io.BytesIO(output_data))
+        output_format = format.upper() if format else 'PNG'
+        
+        buffer = io.BytesIO()
+        img.save(buffer, format=output_format)
+        buffer.seek(0)
+        
+        return buffer, output_format.lower()

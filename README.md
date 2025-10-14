@@ -2,6 +2,24 @@
 
 A Flask-based image processing service with user authentication, image upload, and transformation capabilities.
 
+## Features
+
+- **User Authentication**: JWT-based authentication with registration and login
+- **Image Upload**: Support for PNG, JPG, JPEG, GIF, WEBP formats (max 16MB)
+- **Image Transformations**:
+  - Resize (width/height)
+  - Crop (custom dimensions)
+  - Rotate (90, 180, 270 degrees)
+  - Watermark (custom text)
+  - Format conversion (JPEG, PNG, WebP)
+  - Grayscale filter
+  - Quality enhancement (sharpness, contrast, color)
+  - Aggressive compression
+- **Background Removal**: AI-powered background removal
+- **Thumbnail Generation**: Custom size thumbnails
+- **Rate Limiting**: Protection against abuse
+- **API Documentation**: Interactive Swagger UI
+
 ## Setup
 
 1. Create virtual environment:
@@ -42,6 +60,7 @@ The Swagger UI provides:
 - `GET /api/images/<id>` - Get original image
 - `GET /api/images/<id>/transform` - Get transformed image
 - `GET /api/images/<id>/thumbnail` - Get thumbnail
+- `GET /api/images/<id>/remove-background` - Remove background from image
 - `DELETE /api/images/<id>` - Delete image
 - `GET /api/images` - List all user images
 
@@ -56,7 +75,9 @@ The Swagger UI provides:
 - `crop_height` - Crop height
 - `rotate` - Rotation angle in degrees (e.g., 90, 180, 270)
 - `watermark` - Watermark text to add to image
-- `optimize` - Optimize image (true/false)
+- `optimize` - Enable both enhancement and compression (true/false)
+- `enhance` - Enhance image quality only - sharpness, contrast, color (true/false)
+- `compress` - Reduce file size only - aggressive compression (true/false)
 - `grayscale` - Convert to grayscale (true/false)
 - `download` - Force download instead of display (true/false)
 
@@ -111,4 +132,9 @@ curl "http://localhost:5000/api/images/1/transform?optimize=true&quality=80" \
 curl "http://localhost:5000/api/images/1/thumbnail?size=200x200" \
   -H "Authorization: Bearer <token>" \
   --output thumbnail.jpg
+
+# Remove background
+curl "http://localhost:5000/api/images/1/remove-background?format=png&download=true" \
+  -H "Authorization: Bearer <token>" \
+  --output no_background.png
 ```

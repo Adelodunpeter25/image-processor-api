@@ -2,7 +2,7 @@
 Image Processor API - Main application entry point.
 
 A Flask-based image processing service with user authentication,
-image upload, and transformation capabilities.
+image upload, background removal and transformation capabilities.
 """
 from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
@@ -21,7 +21,7 @@ jwt = JWTManager(app)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"],
+    default_limits=["300 per day", "70 per hour"],
     storage_uri="memory://"
 )
 
@@ -41,6 +41,14 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 def swagger_spec():
     """Serve the Swagger specification."""
     return send_from_directory('.', 'swagger.json')
+
+@app.route('/', methods=['GET', 'HEAD'])
+def home():
+    """Serve as the home route."""
+    return {
+        "message": "Image Processor API", 
+        "status": "running"
+        }
 
 # Register blueprints
 from routes.auth import auth_bp

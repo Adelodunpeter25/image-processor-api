@@ -8,6 +8,8 @@
   "host": "localhost:5000",
   "basePath": "/api",
   "schemes": ["http"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
   "securityDefinitions": {
     "Bearer": {
       "type": "apiKey",
@@ -17,6 +19,22 @@
     }
   },
   "paths": {
+    "/": {
+      "get": {
+        "tags": ["Home"],
+        "summary": "Home route",
+        "responses": {
+          "200": { "description": "Home page accessed successfully" }
+        }
+      },
+      "head": {
+        "tags": ["Home"],
+        "summary": "Home route HEAD request",
+        "responses": {
+          "200": { "description": "Home page accessed successfully" }
+        }
+      }
+    },
     "/auth/register": {
       "post": {
         "tags": ["Authentication"],
@@ -30,15 +48,15 @@
               "type": "object",
               "required": ["email", "password"],
               "properties": {
-                "email": {"type": "string", "example": "user@example.com"},
-                "password": {"type": "string", "example": "password123"}
+                "email": { "type": "string", "example": "user@example.com" },
+                "password": { "type": "string", "example": "password123" }
               }
             }
           }
         ],
         "responses": {
-          "201": {"description": "User registered successfully"},
-          "400": {"description": "Validation error"}
+          "201": { "description": "User registered successfully" },
+          "400": { "description": "Validation error" }
         }
       }
     },
@@ -55,15 +73,15 @@
               "type": "object",
               "required": ["email", "password"],
               "properties": {
-                "email": {"type": "string", "example": "user@example.com"},
-                "password": {"type": "string", "example": "password123"}
+                "email": { "type": "string", "example": "user@example.com" },
+                "password": { "type": "string", "example": "password123" }
               }
             }
           }
         ],
         "responses": {
-          "200": {"description": "Login successful"},
-          "401": {"description": "Invalid credentials"}
+          "200": { "description": "Login successful" },
+          "401": { "description": "Invalid credentials" }
         }
       }
     },
@@ -71,7 +89,7 @@
       "post": {
         "tags": ["Images"],
         "summary": "Upload an image",
-        "security": [{"Bearer": []}],
+        "security": [{ "Bearer": [] }],
         "consumes": ["multipart/form-data"],
         "parameters": [
           {
@@ -83,9 +101,9 @@
           }
         ],
         "responses": {
-          "201": {"description": "Image uploaded successfully"},
-          "400": {"description": "Validation error"},
-          "401": {"description": "Unauthorized"}
+          "201": { "description": "Image uploaded successfully" },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Unauthorized" }
         }
       }
     },
@@ -93,26 +111,26 @@
       "get": {
         "tags": ["Images"],
         "summary": "Get original image",
-        "security": [{"Bearer": []}],
+        "security": [{ "Bearer": [] }],
         "parameters": [
-          {"in": "path", "name": "image_id", "type": "integer", "required": true},
-          {"in": "query", "name": "download", "type": "boolean", "default": false, "description": "Force download instead of display"}
+          { "in": "path", "name": "image_id", "type": "integer", "required": true },
+          { "in": "query", "name": "download", "type": "boolean", "default": false }
         ],
         "responses": {
-          "200": {"description": "Image file"},
-          "404": {"description": "Image not found"}
+          "200": { "description": "Image file" },
+          "404": { "description": "Image not found" }
         }
       },
       "delete": {
         "tags": ["Images"],
         "summary": "Delete an image",
-        "security": [{"Bearer": []}],
+        "security": [{ "Bearer": [] }],
         "parameters": [
-          {"in": "path", "name": "image_id", "type": "integer", "required": true}
+          { "in": "path", "name": "image_id", "type": "integer", "required": true }
         ],
         "responses": {
-          "200": {"description": "Image deleted successfully"},
-          "404": {"description": "Image not found"}
+          "200": { "description": "Image deleted successfully" },
+          "404": { "description": "Image not found" }
         }
       }
     },
@@ -120,26 +138,28 @@
       "get": {
         "tags": ["Images"],
         "summary": "Transform an image",
-        "security": [{"Bearer": []}],
+        "security": [{ "Bearer": [] }],
         "parameters": [
-          {"in": "path", "name": "image_id", "type": "integer", "required": true},
-          {"in": "query", "name": "width", "type": "integer"},
-          {"in": "query", "name": "height", "type": "integer"},
-          {"in": "query", "name": "format", "type": "string", "enum": ["jpeg", "png", "webp"]},
-          {"in": "query", "name": "quality", "type": "integer", "default": 85},
-          {"in": "query", "name": "crop_x", "type": "integer"},
-          {"in": "query", "name": "crop_y", "type": "integer"},
-          {"in": "query", "name": "crop_width", "type": "integer"},
-          {"in": "query", "name": "crop_height", "type": "integer"},
-          {"in": "query", "name": "rotate", "type": "integer", "enum": [90, 180, 270]},
-          {"in": "query", "name": "watermark", "type": "string"},
-          {"in": "query", "name": "optimize", "type": "boolean"},
-          {"in": "query", "name": "grayscale", "type": "boolean"},
-          {"in": "query", "name": "download", "type": "boolean", "default": false, "description": "Force download instead of display"}
+          { "in": "path", "name": "image_id", "type": "integer", "required": true },
+          { "in": "query", "name": "width", "type": "integer" },
+          { "in": "query", "name": "height", "type": "integer" },
+          { "in": "query", "name": "format", "type": "string", "enum": ["jpeg", "png", "webp"] },
+          { "in": "query", "name": "quality", "type": "integer", "default": 85 },
+          { "in": "query", "name": "crop_x", "type": "integer" },
+          { "in": "query", "name": "crop_y", "type": "integer" },
+          { "in": "query", "name": "crop_width", "type": "integer" },
+          { "in": "query", "name": "crop_height", "type": "integer" },
+          { "in": "query", "name": "rotate", "type": "integer", "enum": [90, 180, 270] },
+          { "in": "query", "name": "watermark", "type": "string" },
+          { "in": "query", "name": "optimize", "type": "boolean" },
+          { "in": "query", "name": "enhance", "type": "boolean" },
+          { "in": "query", "name": "compress", "type": "boolean" },
+          { "in": "query", "name": "grayscale", "type": "boolean" },
+          { "in": "query", "name": "download", "type": "boolean", "default": false }
         ],
         "responses": {
-          "200": {"description": "Transformed image"},
-          "404": {"description": "Image not found"}
+          "200": { "description": "Transformed image" },
+          "404": { "description": "Image not found" }
         }
       }
     },
@@ -147,15 +167,31 @@
       "get": {
         "tags": ["Images"],
         "summary": "Generate thumbnail",
-        "security": [{"Bearer": []}],
+        "security": [{ "Bearer": [] }],
         "parameters": [
-          {"in": "path", "name": "image_id", "type": "integer", "required": true},
-          {"in": "query", "name": "size", "type": "string", "default": "150x150"},
-          {"in": "query", "name": "download", "type": "boolean", "default": false, "description": "Force download instead of display"}
+          { "in": "path", "name": "image_id", "type": "integer", "required": true },
+          { "in": "query", "name": "size", "type": "string", "default": "150x150" },
+          { "in": "query", "name": "download", "type": "boolean", "default": false }
         ],
         "responses": {
-          "200": {"description": "Thumbnail image"},
-          "404": {"description": "Image not found"}
+          "200": { "description": "Thumbnail image" },
+          "404": { "description": "Image not found" }
+        }
+      }
+    },
+    "/images/{image_id}/remove-background": {
+      "get": {
+        "tags": ["Images"],
+        "summary": "Remove background from image",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          { "in": "path", "name": "image_id", "type": "integer", "required": true },
+          { "in": "query", "name": "format", "type": "string", "enum": ["png", "webp"] },
+          { "in": "query", "name": "download", "type": "boolean", "default": false }
+        ],
+        "responses": {
+          "200": { "description": "Image with background removed" },
+          "404": { "description": "Image not found" }
         }
       }
     },
@@ -163,9 +199,9 @@
       "get": {
         "tags": ["Images"],
         "summary": "List all user images",
-        "security": [{"Bearer": []}],
+        "security": [{ "Bearer": [] }],
         "responses": {
-          "200": {"description": "List of images"}
+          "200": { "description": "List of images" }
         }
       }
     }

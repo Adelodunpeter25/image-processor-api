@@ -48,6 +48,8 @@ def transform_image(image_id):
         crop_width = request.args.get('crop_width', type=int)
         crop_height = request.args.get('crop_height', type=int)
         optimize = request.args.get('optimize', default='false').lower() == 'true'
+        enhance = request.args.get('enhance', default='false').lower() == 'true'
+        compress = request.args.get('compress', default='false').lower() == 'true'
         rotate = request.args.get('rotate', type=int)
         watermark_text = request.args.get('watermark', type=str)
         grayscale = request.args.get('grayscale', default='false').lower() == 'true'
@@ -71,7 +73,8 @@ def transform_image(image_id):
         
         buffer, output_format = ImageProcessor.transform_image(
             image.original_path, width, height, format, quality,
-            crop_x, crop_y, crop_width, crop_height, optimize, rotate, watermark_text, grayscale
+            crop_x, crop_y, crop_width, crop_height, optimize, enhance, compress, 
+            rotate, watermark_text, grayscale
         )
         
         download_name = f"image_{image_id}.{output_format}" if download else None
@@ -130,6 +133,31 @@ def delete_image(image_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'Delete failed', 'message': str(e)}), 500
+
+@transform_bp.route('/<int:image_id>/remove-background', methods=['GET'])
+@jwt_required()
+def remove_background(image_id):
+    """Remove background from an image."""
+    try:
+        user = get_current_user()
+        image = Image.query.filter_by(id=image_id, user_id=user.id).first()
+        
+        if not image:
+            return jsonify({'error': 'Image not found'}), 404
+        
+        format = request.args.get('format', type=str)
+        download = request.args.get('download', default='false').lower() == 'true'
+        
+        # Validate format
+        if format and format.lower() not in ['png', 'webp']:
+            return jsonify({'error': 'Invalid format. Recommended: png (for transparency)'}), 400
+        
+        buffer, output_format = ImageProcessor.remove_background(image.original_path, format)
+        
+        download_name = f"no_bg_{image_id}.{output_format}" if download else None
+        return send_file(buffer, mimetype=f'image/{output_format}', as_attachment=download, download_name=download_name)
+    except Exception as e:
+        return jsonify({'error': 'Background removal failed', 'message': str(e)}), 500
 
 @transform_bp.route('', methods=['GET'])
 @jwt_required()
