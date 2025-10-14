@@ -5,6 +5,7 @@ A Flask-based image processing service with user authentication,
 image upload, background removal and transformation capabilities.
 """
 import os
+import threading
 from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -28,6 +29,16 @@ app.config.from_object(Config)
 # Get environment
 ENV = os.getenv('FLASK_ENV', 'development')
 DEBUG = ENV == 'development'
+
+# Preload rembg in background to avoid first-request delay
+def preload_rembg():
+    """Preload rembg model in background thread."""
+    try:
+        from rembg import remove
+    except Exception:
+        pass
+
+threading.Thread(target=preload_rembg, daemon=True).start()
 
 # Initialize CORS
 CORS(app, resources={

@@ -60,14 +60,23 @@ def batch_upload():
                 # Save file
                 filepath, unique_filename = storage_service.save_file(file, user.id)
                 
-                # Get image format
-                file_ext = file.filename.rsplit('.', 1)[1].lower()
+                # Extract image metadata
+                try:
+                    info = ImageProcessor.get_image_info(filepath)
+                except Exception as e:
+                    storage_service.delete_file(filepath)
+                    errors.append({'filename': file.filename, 'error': f'Invalid image: {str(e)}'})
+                    continue
                 
                 # Create database record
+                import os
                 new_image = Image(
                     filename=unique_filename,
                     original_path=filepath,
-                    format=file_ext,
+                    format=info['format'],
+                    size=os.path.getsize(filepath) if not is_url(filepath) else 0,
+                    width=info['width'],
+                    height=info['height'],
                     user_id=user.id
                 )
                 db.session.add(new_image)
@@ -76,7 +85,9 @@ def batch_upload():
                 uploaded_images.append({
                     'id': new_image.id,
                     'filename': unique_filename,
-                    'format': file_ext
+                    'format': info['format'],
+                    'width': info['width'],
+                    'height': info['height']
                 })
                 
             except Exception as e:

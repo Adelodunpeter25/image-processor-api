@@ -175,7 +175,7 @@ class ImageProcessor:
             tuple: (BytesIO buffer, output_format)
         """
         # Lazy import - only load rembg when needed
-        from rembg import remove
+        from rembg import remove, new_session
         
         # Handle both file paths and BytesIO objects
         if isinstance(filepath, io.BytesIO):
@@ -185,7 +185,9 @@ class ImageProcessor:
             with open(filepath, 'rb') as input_file:
                 input_data = input_file.read()
         
-        output_data = remove(input_data)
+        # Use u2netp model (lighter and faster)
+        session = new_session('u2netp')
+        output_data = remove(input_data, session=session)
         
         # Convert to PIL Image to handle format
         img = Image.open(io.BytesIO(output_data))
