@@ -1,6 +1,5 @@
 """Image processing service for transformations and manipulations."""
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
-from rembg import remove
 import io
 
 class ImageProcessor:
@@ -175,6 +174,9 @@ class ImageProcessor:
         Returns:
             tuple: (BytesIO buffer, output_format)
         """
+        # Lazy import - only load rembg when needed
+        from rembg import remove
+        
         # Handle both file paths and BytesIO objects
         if isinstance(filepath, io.BytesIO):
             input_data = filepath.read()
