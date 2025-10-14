@@ -30,7 +30,7 @@ jwt = JWTManager(app)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour", "10 per minute"],
+    default_limits=["200 per day", "60 per hour", "30 per minute"],
     storage_uri="memory://"
 )
 
@@ -63,10 +63,12 @@ def home():
 from routes.auth import auth_bp
 from routes.upload import upload_bp
 from routes.transform import transform_bp
+from routes.batch import batch_bp
 
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(upload_bp, url_prefix='/api/images')
 app.register_blueprint(transform_bp, url_prefix='/api/images')
+app.register_blueprint(batch_bp, url_prefix='/api/batch')
 
 # Global error handlers
 @app.errorhandler(400)

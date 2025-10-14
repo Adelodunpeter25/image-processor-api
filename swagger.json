@@ -204,6 +204,72 @@
           "200": { "description": "List of images" }
         }
       }
+    },
+    "/batch/upload": {
+      "post": {
+        "tags": ["Batch Processing"],
+        "summary": "Upload multiple images at once",
+        "security": [{"Bearer": []}],
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          {"in": "formData", "name": "files", "type": "file", "required": true, "description": "Multiple image files (max 10)"}
+        ],
+        "responses": {
+          "201": {"description": "Images uploaded successfully"},
+          "400": {"description": "Invalid request"}
+        }
+      }
+    },
+    "/batch/transform": {
+      "post": {
+        "tags": ["Batch Processing"],
+        "summary": "Apply same transformation to multiple images",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {"in": "body", "name": "body", "required": true, "schema": {
+            "type": "object",
+            "required": ["image_ids"],
+            "properties": {
+              "image_ids": {"type": "array", "items": {"type": "integer"}, "description": "Array of image IDs (max 10)"},
+              "width": {"type": "integer"},
+              "height": {"type": "integer"},
+              "format": {"type": "string", "enum": ["jpeg", "png", "webp"]},
+              "quality": {"type": "integer", "minimum": 1, "maximum": 100},
+              "rotate": {"type": "integer", "enum": [90, 180, 270]},
+              "watermark": {"type": "string"},
+              "optimize": {"type": "boolean"},
+              "enhance": {"type": "boolean"},
+              "compress": {"type": "boolean"},
+              "grayscale": {"type": "boolean"}
+            }
+          }}
+        ],
+        "responses": {
+          "200": {"description": "ZIP file with transformed images"},
+          "400": {"description": "Invalid request"}
+        }
+      }
+    },
+    "/batch/remove-background": {
+      "post": {
+        "tags": ["Batch Processing"],
+        "summary": "Remove background from multiple images",
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {"in": "body", "name": "body", "required": true, "schema": {
+            "type": "object",
+            "required": ["image_ids"],
+            "properties": {
+              "image_ids": {"type": "array", "items": {"type": "integer"}, "description": "Array of image IDs (max 10)"},
+              "format": {"type": "string", "enum": ["png", "webp"], "default": "png"}
+            }
+          }}
+        ],
+        "responses": {
+          "200": {"description": "ZIP file with background removed images"},
+          "400": {"description": "Invalid request"}
+        }
+      }
     }
   }
 }

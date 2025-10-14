@@ -121,7 +121,7 @@ class ImageProcessor:
                 img = enhancer.enhance(1.05)
             
             # Save to buffer
-            output_format = format.upper() if format else img.format
+            output_format = format.upper() if format else (img.format if img.format else 'JPEG')
             buffer = io.BytesIO()
             
             # Apply compression

@@ -87,6 +87,11 @@ The Swagger UI provides:
 - `DELETE /api/images/<id>` - Delete image
 - `GET /api/images` - List all user images
 
+### Batch Processing
+- `POST /api/batch/upload` - Upload multiple images (max 10)
+- `POST /api/batch/transform` - Apply same transformation to multiple images
+- `POST /api/batch/remove-background` - Remove background from multiple images
+
 ### Transform Parameters
 - `width` - Resize width
 - `height` - Resize height
@@ -160,6 +165,27 @@ curl "http://localhost:5000/api/images/1/thumbnail?size=200x200" \
 curl "http://localhost:5000/api/images/1/remove-background?format=png&download=true" \
   -H "Authorization: Bearer <token>" \
   --output no_background.png
+
+# Batch upload multiple images
+curl -X POST http://localhost:5000/api/batch/upload \
+  -H "Authorization: Bearer <token>" \
+  -F "files=@image1.jpg" \
+  -F "files=@image2.jpg" \
+  -F "files=@image3.jpg"
+
+# Batch transform (returns ZIP)
+curl -X POST http://localhost:5000/api/batch/transform \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"image_ids": [1, 2, 3], "width": 300, "format": "webp"}' \
+  --output transformed.zip
+
+# Batch remove background (returns ZIP)
+curl -X POST http://localhost:5000/api/batch/remove-background \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"image_ids": [1, 2, 3], "format": "png"}' \
+  --output no_backgrounds.zip
 ```
 
 ---
