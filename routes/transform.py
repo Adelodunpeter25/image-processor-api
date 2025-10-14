@@ -44,9 +44,6 @@ def get_image(image_id):
 def transform_image(image_id):
     """Apply transformations to an image."""
     try:
-        from main import limiter
-        limiter.limit("20 per minute")(lambda: None)()
-        
         user = get_current_user()
         image = Image.query.filter_by(id=image_id, user_id=user.id).first()
         

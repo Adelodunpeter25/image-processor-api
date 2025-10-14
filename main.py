@@ -121,10 +121,12 @@ with app.app_context():
     from models.api_key import APIKey
     db.create_all()
 
-if __name__ == '__main__':
-    if ENV == 'production':
-        print(f"🚀 Starting in PRODUCTION mode")
-        app.run(host='0.0.0.0', port=5000, debug=False)
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))  # Use Render’s assigned port
+    if ENV == "production":
+        print("🚀 Starting in PRODUCTION mode")
+        app.run(host="0.0.0.0", port=port, debug=False)
     else:
-        print(f"🔧 Starting in DEVELOPMENT mode")
-        app.run(host='0.0.0.0', port=5000, debug=True)
+        print("🔧 Starting in DEVELOPMENT mode")
+        app.run(host="0.0.0.0", port=port, debug=True)
