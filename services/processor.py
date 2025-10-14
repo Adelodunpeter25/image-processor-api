@@ -1,6 +1,24 @@
 """Image processing service for transformations and manipulations."""
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 import io
+import hashlib
+from functools import lru_cache
+
+# In-memory cache for transformed images (max 100 items)
+_transform_cache = {}
+_cache_max_size = 100
+
+def get_transform_cache_key(filepath, width, height, format, quality, 
+                            crop_x, crop_y, crop_width, crop_height,
+                            optimize, enhance, compress, rotate, watermark_text, grayscale):
+    """Generate cache key for transformation parameters."""
+    params = f"{filepath}_{width}_{height}_{format}_{quality}_{crop_x}_{crop_y}_{crop_width}_{crop_height}_{optimize}_{enhance}_{compress}_{rotate}_{watermark_text}_{grayscale}"
+    return hashlib.md5(params.encode()).hexdigest()
+
+def clear_transform_cache():
+    """Clear the transformation cache."""
+    global _transform_cache
+    _transform_cache.clear()
 
 class ImageProcessor:
     """Handles image processing operations like resize, crop, rotate, etc."""
@@ -52,6 +70,23 @@ class ImageProcessor:
         Returns:
             tuple: (BytesIO buffer, output_format)
         """
+        global _transform_cache
+        
+        # Generate cache key
+        cache_key = get_transform_cache_key(
+            str(filepath), width, height, format, quality,
+            crop_x, crop_y, crop_width, crop_height,
+            optimize, enhance, compress, rotate, watermark_text, grayscale
+        )
+        
+        # Check cache
+        if cache_key in _transform_cache:
+            cached_buffer, cached_format = _transform_cache[cache_key]
+            # Return a copy of the cached buffer
+            buffer_copy = io.BytesIO(cached_buffer.getvalue())
+            return buffer_copy, cached_format
+        
+        # Process image with lazy loading
         with Image.open(filepath) as img:
             # Convert to RGB if necessary for certain operations
             if img.mode in ('RGBA', 'LA', 'P'):
@@ -61,19 +96,11 @@ class ImageProcessor:
                 background.paste(img, mask=img.split()[-1] if img.mode in ('RGBA', 'LA') else None)
                 img = background
             
-            # Apply grayscale filter
-            if grayscale:
-                img = img.convert('L').convert('RGB')
-            
-            # Apply rotation
-            if rotate is not None:
-                img = img.rotate(rotate, expand=True)
-            
-            # Apply crop
+            # OPTIMIZATION: Crop FIRST to reduce image size for subsequent operations
             if crop_x is not None and crop_y is not None and crop_width and crop_height:
                 img = img.crop((crop_x, crop_y, crop_x + crop_width, crop_y + crop_height))
             
-            # Apply resize
+            # Apply resize (on smaller cropped image if crop was applied)
             if width or height:
                 original_width, original_height = img.size
                 if width and height:
@@ -84,6 +111,14 @@ class ImageProcessor:
                 elif height:
                     width = int((height / original_height) * original_width)
                     img = img.resize((width, height))
+            
+            # Apply rotation
+            if rotate is not None:
+                img = img.rotate(rotate, expand=True)
+            
+            # Apply grayscale filter
+            if grayscale:
+                img = img.convert('L').convert('RGB')
             
             # Apply watermark
             if watermark_text:
@@ -141,6 +176,16 @@ class ImageProcessor:
                 img.save(buffer, format=output_format, quality=quality)
             
             buffer.seek(0)
+            
+            # Store in cache (with size limit)
+            if len(_transform_cache) >= _cache_max_size:
+                # Remove oldest entry (simple FIFO)
+                _transform_cache.pop(next(iter(_transform_cache)))
+            
+            # Cache a copy of the buffer
+            cache_buffer = io.BytesIO(buffer.getvalue())
+            _transform_cache[cache_key] = (cache_buffer, output_format.lower())
+            
             return buffer, output_format.lower()
     
     @staticmethod

@@ -10,6 +10,7 @@ from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS
+from flask_compress import Compress
 from dotenv import load_dotenv
 from config import Config
 from models.user import db
@@ -49,6 +50,9 @@ CORS(app, resources={
         "expose_headers": ["Content-Disposition"]
     }
 })
+
+# Initialize response compression
+Compress(app)
 
 # Initialize extensions
 db.init_app(app)

@@ -281,6 +281,7 @@
       "post": {
         "tags": ["Batch Processing"],
         "summary": "Upload multiple images at once",
+        "description": "Note: Swagger UI does not support testing multiple file uploads. Use curl or Postman instead.",
         "security": [{"Bearer": []}, {"ApiKey": []}],
         "consumes": ["multipart/form-data"],
         "parameters": [

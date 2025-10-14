@@ -1,6 +1,7 @@
 """File storage service for managing uploaded images."""
 import os
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from werkzeug.utils import secure_filename
 from supabase import create_client, Client
 
@@ -26,6 +27,15 @@ class StorageService:
             # Use local storage for development
             os.makedirs(upload_folder, exist_ok=True)
     
+    def _upload_to_supabase(self, unique_filename, file_data, content_type):
+        """Internal method to upload to Supabase."""
+        self.supabase.storage.from_(self.bucket).upload(
+            unique_filename,
+            file_data,
+            file_options={"content-type": content_type}
+        )
+        return self.supabase.storage.from_(self.bucket).get_public_url(unique_filename)
+    
     def save_file(self, file, user_id):
         """
         Save uploaded file (local or Supabase based on environment).
@@ -41,23 +51,33 @@ class StorageService:
         unique_filename = f"{user_id}_{uuid.uuid4().hex}_{filename}"
         
         if self.env == 'production':
-            # Upload to Supabase Storage
+            # Upload to Supabase Storage asynchronously
             file_data = file.read()
             file.seek(0)
             
-            self.supabase.storage.from_(self.bucket).upload(
-                unique_filename,
-                file_data,
-                file_options={"content-type": file.content_type}
-            )
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(
+                    self._upload_to_supabase,
+                    unique_filename,
+                    file_data,
+                    file.content_type
+                )
+                public_url = future.result()
             
-            # Get public URL
-            public_url = self.supabase.storage.from_(self.bucket).get_public_url(unique_filename)
             return public_url, unique_filename
         else:
-            # Save to local filesystem
+            # Save to local filesystem with streaming
             filepath = os.path.join(self.upload_folder, unique_filename)
-            file.save(filepath)
+            
+            # Stream file in chunks to avoid loading entire file in memory
+            with open(filepath, 'wb') as f:
+                while True:
+                    chunk = file.read(8192)  # 8KB chunks
+                    if not chunk:
+                        break
+                    f.write(chunk)
+            
+            file.seek(0)  # Reset file pointer for potential reuse
             return filepath, unique_filename
     
     def delete_file(self, filepath):
