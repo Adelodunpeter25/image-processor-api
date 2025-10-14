@@ -343,6 +343,122 @@
           "400": {"description": "Invalid request"}
         }
       }
+    },
+    "/presets": {
+      "post": {
+        "tags": ["Presets"],
+        "summary": "Create a new transformation preset",
+        "security": [{"Bearer": []}, {"ApiKey": []}],
+        "parameters": [
+          {"in": "body", "name": "body", "required": true, "schema": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {"type": "string", "example": "Instagram Square"},
+              "description": {"type": "string", "example": "Perfect square for Instagram posts"},
+              "is_public": {"type": "boolean", "default": false},
+              "width": {"type": "integer"},
+              "height": {"type": "integer"},
+              "format": {"type": "string", "enum": ["jpeg", "png", "webp"]},
+              "quality": {"type": "integer", "minimum": 1, "maximum": 100},
+              "crop_x": {"type": "integer"},
+              "crop_y": {"type": "integer"},
+              "crop_width": {"type": "integer"},
+              "crop_height": {"type": "integer"},
+              "rotate": {"type": "integer", "enum": [90, 180, 270]},
+              "watermark": {"type": "string"},
+              "optimize": {"type": "boolean"},
+              "enhance": {"type": "boolean"},
+              "compress": {"type": "boolean"},
+              "grayscale": {"type": "boolean"}
+            }
+          }}
+        ],
+        "responses": {
+          "201": {"description": "Preset created successfully"},
+          "400": {"description": "Invalid request"}
+        }
+      },
+      "get": {
+        "tags": ["Presets"],
+        "summary": "List all presets (own + public)",
+        "security": [{"Bearer": []}, {"ApiKey": []}],
+        "responses": {
+          "200": {"description": "List of presets"}
+        }
+      }
+    },
+    "/presets/{preset_id}": {
+      "get": {
+        "tags": ["Presets"],
+        "summary": "Get a specific preset",
+        "security": [{"Bearer": []}, {"ApiKey": []}],
+        "parameters": [
+          {"in": "path", "name": "preset_id", "type": "integer", "required": true}
+        ],
+        "responses": {
+          "200": {"description": "Preset details"},
+          "404": {"description": "Preset not found"}
+        }
+      },
+      "put": {
+        "tags": ["Presets"],
+        "summary": "Update a preset",
+        "security": [{"Bearer": []}, {"ApiKey": []}],
+        "parameters": [
+          {"in": "path", "name": "preset_id", "type": "integer", "required": true},
+          {"in": "body", "name": "body", "schema": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "description": {"type": "string"},
+              "is_public": {"type": "boolean"},
+              "width": {"type": "integer"},
+              "height": {"type": "integer"},
+              "format": {"type": "string"},
+              "quality": {"type": "integer"},
+              "rotate": {"type": "integer"},
+              "watermark": {"type": "string"},
+              "optimize": {"type": "boolean"},
+              "enhance": {"type": "boolean"},
+              "compress": {"type": "boolean"},
+              "grayscale": {"type": "boolean"}
+            }
+          }}
+        ],
+        "responses": {
+          "200": {"description": "Preset updated successfully"},
+          "404": {"description": "Preset not found"}
+        }
+      },
+      "delete": {
+        "tags": ["Presets"],
+        "summary": "Delete a preset",
+        "security": [{"Bearer": []}, {"ApiKey": []}],
+        "parameters": [
+          {"in": "path", "name": "preset_id", "type": "integer", "required": true}
+        ],
+        "responses": {
+          "200": {"description": "Preset deleted successfully"},
+          "404": {"description": "Preset not found"}
+        }
+      }
+    },
+    "/presets/{preset_id}/apply/{image_id}": {
+      "get": {
+        "tags": ["Presets"],
+        "summary": "Apply preset to an image",
+        "security": [{"Bearer": []}, {"ApiKey": []}],
+        "parameters": [
+          {"in": "path", "name": "preset_id", "type": "integer", "required": true},
+          {"in": "path", "name": "image_id", "type": "integer", "required": true},
+          {"in": "query", "name": "download", "type": "boolean", "default": false}
+        ],
+        "responses": {
+          "200": {"description": "Transformed image with preset applied"},
+          "404": {"description": "Preset or image not found"}
+        }
+      }
     }
   }
 }

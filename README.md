@@ -19,6 +19,7 @@ A Flask-based image processing service with user authentication, image upload, b
 - **Background Removal**: AI-powered background removal
 - **Configurable**: Environment-based configuration support
 - **Thumbnail Generation**: Custom size thumbnails
+- **Preset Transformations**: Save and reuse transformation settings
 - **Rate Limiting**: Protection against abuse
 - **API Documentation**: Interactive Swagger UI
 
@@ -183,6 +184,21 @@ curl -X POST http://localhost:5000/api/batch/remove-background \
   -H "Content-Type: application/json" \
   -d '{"image_ids": [1, 2, 3], "format": "png"}' \
   --output no_backgrounds.zip
+
+# Create a preset
+curl -X POST http://localhost:5000/api/presets \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "My Instagram", "width": 1080, "height": 1080, "format": "jpeg", "quality": 90}'
+
+# List all presets (yours + public)
+curl http://localhost:5000/api/presets \
+  -H "Authorization: Bearer <token>"
+
+# Apply preset to image
+curl "http://localhost:5000/api/presets/1/apply/5" \
+  -H "Authorization: Bearer <token>" \
+  --output preset_result.jpg
 ```
 
 ---

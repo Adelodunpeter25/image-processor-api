@@ -20,6 +20,7 @@ from routes.upload import upload_bp
 from routes.transform import transform_bp
 from routes.batch import batch_bp
 from routes.api_keys import api_keys_bp
+from routes.presets import presets_bp
 
 # Load environment variables
 load_dotenv()
@@ -99,6 +100,7 @@ app.register_blueprint(upload_bp, url_prefix='/api/images')
 app.register_blueprint(transform_bp, url_prefix='/api/images')
 app.register_blueprint(batch_bp, url_prefix='/api/batch')
 app.register_blueprint(api_keys_bp, url_prefix='/api/auth/api-keys')
+app.register_blueprint(presets_bp, url_prefix='/api/presets')
 
 # Global error handlers
 @app.errorhandler(400)
