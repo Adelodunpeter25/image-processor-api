@@ -13,42 +13,7 @@ def validate_email(email):
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
-    """
-    Register a new user.
-    ---
-    tags:
-      - Authentication
-    parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          required:
-            - email
-            - password
-          properties:
-            email:
-              type: string
-              example: user@example.com
-            password:
-              type: string
-              example: password123
-    responses:
-      201:
-        description: User registered successfully
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-            user_id:
-              type: integer
-      400:
-        description: Validation error
-      500:
-        description: Server error
-    """
+    """Register a new user."""
     try:
         data = request.get_json()
         
@@ -87,42 +52,7 @@ def register():
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    """
-    Login user and return JWT token.
-    ---
-    tags:
-      - Authentication
-    parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          required:
-            - email
-            - password
-          properties:
-            email:
-              type: string
-              example: user@example.com
-            password:
-              type: string
-              example: password123
-    responses:
-      200:
-        description: Login successful
-        schema:
-          type: object
-          properties:
-            access_token:
-              type: string
-      400:
-        description: Missing credentials
-      401:
-        description: Invalid credentials
-      500:
-        description: Server error
-    """
+    """Login user and return JWT token."""
     try:
         data = request.get_json()
         
@@ -141,7 +71,7 @@ def login():
             return jsonify({'error': 'Invalid credentials'}), 401
         
         # Generate JWT token
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=str(user.id))
         return jsonify({'access_token': access_token}), 200
     except Exception as e:
         return jsonify({'error': 'Login failed', 'message': str(e)}), 500

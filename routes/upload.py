@@ -17,48 +17,7 @@ def allowed_file(filename, allowed_extensions):
 @upload_bp.route('/upload', methods=['POST'])
 @jwt_required()
 def upload_image():
-    """
-    Upload an image file.
-    ---
-    tags:
-      - Images
-    security:
-      - Bearer: []
-    consumes:
-      - multipart/form-data
-    parameters:
-      - in: formData
-        name: file
-        type: file
-        required: true
-        description: Image file to upload (png, jpg, jpeg, gif, webp)
-    responses:
-      201:
-        description: Image uploaded successfully
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-            image_id:
-              type: integer
-            filename:
-              type: string
-            format:
-              type: string
-            width:
-              type: integer
-            height:
-              type: integer
-      400:
-        description: Validation error
-      401:
-        description: Unauthorized
-      404:
-        description: User not found
-      500:
-        description: Server error
-    """
+    """Upload an image file."""
     try:
         # Validate file presence
         if 'file' not in request.files:

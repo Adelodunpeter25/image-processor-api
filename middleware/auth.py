@@ -14,4 +14,4 @@ def jwt_required_custom(fn):
 def get_current_user():
     """Get the current authenticated user from JWT token."""
     user_id = get_jwt_identity()
-    return User.query.get(user_id)
+    return User.query.get(int(user_id))

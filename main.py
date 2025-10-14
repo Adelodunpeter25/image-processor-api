@@ -4,11 +4,11 @@ Image Processor API - Main application entry point.
 A Flask-based image processing service with user authentication,
 image upload, and transformation capabilities.
 """
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flasgger import Swagger
+from flask_swagger_ui import get_swaggerui_blueprint
 from config import Config
 from models.user import db
 
@@ -25,41 +25,22 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Initialize Swagger documentation
-swagger_config = {
-    "headers": [],
-    "specs": [
-        {
-            "endpoint": 'apispec',
-            "route": '/apispec.json',
-            "rule_filter": lambda rule: True,
-            "model_filter": lambda tag: True,
-        }
-    ],
-    "static_url_path": "/flasgger_static",
-    "swagger_ui": True,
-    "specs_route": "/docs"
-}
+# Swagger UI configuration
+SWAGGER_URL = '/docs'
+API_URL = '/swagger.json'
 
-swagger_template = {
-    "swagger": "2.0",
-    "info": {
-        "title": "Image Processor API",
-        "description": "API for image upload, transformation, and management",
-        "version": "1.0.0"
-    },
-    "securityDefinitions": {
-        "Bearer": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header",
-            "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'"
-        }
-    },
-    "security": [{"Bearer": []}]
-}
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={'app_name': "Image Processor API"}
+)
 
-swagger = Swagger(app, config=swagger_config, template=swagger_template)
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
+@app.route('/swagger.json')
+def swagger_spec():
+    """Serve the Swagger specification."""
+    return send_from_directory('.', 'swagger.json')
 
 # Register blueprints
 from routes.auth import auth_bp
