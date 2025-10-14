@@ -115,13 +115,6 @@ def internal_error(e):
     """Handle internal server errors."""
     return jsonify({'error': 'Internal server error', 'message': 'An unexpected error occurred'}), 500
 
-# Initialize database
-with app.app_context():
-    # Import models to ensure they're registered
-    from models.api_key import APIKey
-    db.create_all()
-
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     ENV = os.environ.get("ENV", "development")
