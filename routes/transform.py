@@ -19,7 +19,9 @@ def get_image(image_id):
         if not image:
             return jsonify({'error': 'Image not found'}), 404
         
-        return send_file(image.original_path, mimetype=f'image/{image.format}')
+        download = request.args.get('download', default='false').lower() == 'true'
+        download_name = f"{image.filename}" if download else None
+        return send_file(image.original_path, mimetype=f'image/{image.format}', as_attachment=download, download_name=download_name)
     except Exception as e:
         return jsonify({'error': 'Failed to retrieve image', 'message': str(e)}), 500
 
@@ -49,6 +51,7 @@ def transform_image(image_id):
         rotate = request.args.get('rotate', type=int)
         watermark_text = request.args.get('watermark', type=str)
         grayscale = request.args.get('grayscale', default='false').lower() == 'true'
+        download = request.args.get('download', default='false').lower() == 'true'
         
         # Validation
         if quality and (quality < 1 or quality > 100):
@@ -71,7 +74,8 @@ def transform_image(image_id):
             crop_x, crop_y, crop_width, crop_height, optimize, rotate, watermark_text, grayscale
         )
         
-        return send_file(buffer, mimetype=f'image/{output_format}')
+        download_name = f"image_{image_id}.{output_format}" if download else None
+        return send_file(buffer, mimetype=f'image/{output_format}', as_attachment=download, download_name=download_name)
     except Exception as e:
         return jsonify({'error': 'Transformation failed', 'message': str(e)}), 500
 
@@ -86,6 +90,7 @@ def get_thumbnail(image_id):
         if not image:
             return jsonify({'error': 'Image not found'}), 404
         
+        download = request.args.get('download', default='false').lower() == 'true'
         size_param = request.args.get('size', default='150x150')
         try:
             width, height = map(int, size_param.split('x'))
@@ -97,7 +102,8 @@ def get_thumbnail(image_id):
         
         buffer, output_format = ImageProcessor.generate_thumbnail(image.original_path, size)
         
-        return send_file(buffer, mimetype=f'image/{output_format}')
+        download_name = f"thumbnail_{image_id}_{size_param}.{output_format}" if download else None
+        return send_file(buffer, mimetype=f'image/{output_format}', as_attachment=download, download_name=download_name)
     except Exception as e:
         return jsonify({'error': 'Thumbnail generation failed', 'message': str(e)}), 500
 

@@ -95,7 +95,8 @@
         "summary": "Get original image",
         "security": [{"Bearer": []}],
         "parameters": [
-          {"in": "path", "name": "image_id", "type": "integer", "required": true}
+          {"in": "path", "name": "image_id", "type": "integer", "required": true},
+          {"in": "query", "name": "download", "type": "boolean", "default": false, "description": "Force download instead of display"}
         ],
         "responses": {
           "200": {"description": "Image file"},
@@ -133,7 +134,8 @@
           {"in": "query", "name": "rotate", "type": "integer", "enum": [90, 180, 270]},
           {"in": "query", "name": "watermark", "type": "string"},
           {"in": "query", "name": "optimize", "type": "boolean"},
-          {"in": "query", "name": "grayscale", "type": "boolean"}
+          {"in": "query", "name": "grayscale", "type": "boolean"},
+          {"in": "query", "name": "download", "type": "boolean", "default": false, "description": "Force download instead of display"}
         ],
         "responses": {
           "200": {"description": "Transformed image"},
@@ -148,7 +150,8 @@
         "security": [{"Bearer": []}],
         "parameters": [
           {"in": "path", "name": "image_id", "type": "integer", "required": true},
-          {"in": "query", "name": "size", "type": "string", "default": "150x150"}
+          {"in": "query", "name": "size", "type": "string", "default": "150x150"},
+          {"in": "query", "name": "download", "type": "boolean", "default": false, "description": "Force download instead of display"}
         ],
         "responses": {
           "200": {"description": "Thumbnail image"},

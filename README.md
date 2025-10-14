@@ -58,9 +58,11 @@ The Swagger UI provides:
 - `watermark` - Watermark text to add to image
 - `optimize` - Optimize image (true/false)
 - `grayscale` - Convert to grayscale (true/false)
+- `download` - Force download instead of display (true/false)
 
 ### Thumbnail Parameters
 - `size` - Thumbnail size (e.g., 150x150, 200x200)
+- `download` - Force download instead of display (true/false)
 
 ## Example Usage
 
