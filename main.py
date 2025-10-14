@@ -123,7 +123,12 @@ with app.app_context():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Use Render’s assigned port
+    port = int(os.environ.get("PORT", 5000))
+    ENV = os.environ.get("ENV", "development")
+
+    print(f"⚙️ Environment: {ENV}")
+    print(f"🌍 Binding server to 0.0.0.0:{port}")
+
     if ENV == "production":
         print("🚀 Starting in PRODUCTION mode")
         app.run(host="0.0.0.0", port=port, debug=False)
