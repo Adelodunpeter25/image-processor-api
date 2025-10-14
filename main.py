@@ -25,7 +25,7 @@ DEBUG = ENV == 'development'
 
 # Initialize CORS
 CORS(app, resources={
-    r"/api/*": {
+    r"/*": {
         "origins": "*",
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization", "X-API-Key"],
@@ -52,7 +52,7 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 @app.route('/swagger.json')
 def swagger_spec():
     """Serve the Swagger specification."""
-    return send_from_directory('.', 'swagger.json')
+    return send_from_directory(os.path.dirname(__file__), 'swagger.json')
 
 @app.route('/', methods=['GET', 'HEAD'])
 def home():
