@@ -12,6 +12,12 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from config import Config
 from models.user import db
+# Register blueprints
+from routes.auth import auth_bp
+from routes.upload import upload_bp
+from routes.transform import transform_bp
+from routes.batch import batch_bp
+from routes.api_keys import api_keys_bp
 
 # Load environment variables
 load_dotenv()
@@ -72,12 +78,6 @@ def health_check():
         "environment": ENV
     }), 200
 
-# Register blueprints
-from routes.auth import auth_bp
-from routes.upload import upload_bp
-from routes.transform import transform_bp
-from routes.batch import batch_bp
-from routes.api_keys import api_keys_bp
 
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(upload_bp, url_prefix='/api/images')
