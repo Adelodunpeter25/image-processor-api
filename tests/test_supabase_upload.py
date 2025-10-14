@@ -45,7 +45,7 @@ def test_supabase_upload():
         print("Uploading test image to Supabase...")
         filepath, filename = storage.save_file(test_image, user_id=999)
         
-        print(f"✅ Upload successful!")
+        print("✅ Upload successful!")
         print(f"   Filename: {filename}")
         print(f"   URL: {filepath}")
         

@@ -44,7 +44,7 @@ def test_thumbnail_generation():
             # Generate thumbnail
             result_buffer, output_format = ImageProcessor.generate_thumbnail(test_image, size)
             
-            print(f"   ✅ Thumbnail generated")
+            print("   ✅ Thumbnail generated")
             print(f"   Output format: {output_format}")
             print(f"   Result size: {len(result_buffer.getvalue())} bytes")
             

@@ -34,7 +34,7 @@ def test_background_removal():
         print("Removing background...")
         result_buffer, output_format = ImageProcessor.remove_background(test_image, format='png')
         
-        print(f"✅ Background removal successful!")
+        print("✅ Background removal successful!")
         print(f"   Output format: {output_format}")
         print(f"   Result size: {len(result_buffer.getvalue())} bytes")
         

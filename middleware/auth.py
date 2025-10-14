@@ -1,10 +1,9 @@
 """Authentication middleware for JWT token and API key verification."""
 from functools import wraps
-from flask import request, jsonify
+from flask import request
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 from models.user import User, db
 from models.api_key import APIKey
-from datetime import datetime
 
 def jwt_required_custom(fn):
     """Custom JWT decorator for route protection."""

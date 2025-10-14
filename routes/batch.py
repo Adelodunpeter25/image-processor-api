@@ -1,14 +1,11 @@
 """Batch processing routes for multiple images."""
 from flask import Blueprint, request, jsonify, send_file
-from flask_jwt_extended import jwt_required
 from models.image import Image
 from models.user import db
 from middleware.auth import get_current_user
 from middleware.api_auth import api_key_or_jwt_required
 from services.processor import ImageProcessor
 from services.storage import StorageService
-from werkzeug.utils import secure_filename
-import os
 import zipfile
 from io import BytesIO
 import requests

@@ -1,12 +1,10 @@
 """Image transformation and retrieval routes."""
 from flask import Blueprint, request, jsonify, send_file, redirect
-from flask_jwt_extended import jwt_required
 from models.image import Image
 from models.user import db
 from middleware.auth import get_current_user
 from middleware.api_auth import api_key_or_jwt_required
 from services.processor import ImageProcessor
-import os
 import requests
 from io import BytesIO
 

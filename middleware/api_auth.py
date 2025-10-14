@@ -2,7 +2,6 @@
 from functools import wraps
 from flask import request, jsonify
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
-from models.user import User
 from middleware.auth import get_user_from_api_key
 from middleware.rate_limiter import check_rate_limit, API_KEY_LIMITS, JWT_LIMITS
 
@@ -42,7 +41,7 @@ def api_key_or_jwt_required(fn):
                 pass
             
             return fn(*args, **kwargs)
-        except Exception as e:
+        except Exception:
             return jsonify({'error': 'Authentication required', 'message': 'Provide either X-API-Key header or JWT token'}), 401
     
     return wrapper
