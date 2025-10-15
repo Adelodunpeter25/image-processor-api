@@ -48,7 +48,17 @@ def upload_image():
             if filepath.startswith('http'):
                 import requests
                 from io import BytesIO
-                response = requests.get(filepath)
+                import time
+                
+                # Retry logic for Supabase (file might not be immediately available)
+                max_retries = 3
+                for attempt in range(max_retries):
+                    response = requests.get(filepath)
+                    if response.status_code == 200:
+                        break
+                    if attempt < max_retries - 1:
+                        time.sleep(0.5)  # Wait 500ms before retry
+                
                 if response.status_code != 200:
                     raise Exception(f"Failed to download image: {response.status_code}")
                 
