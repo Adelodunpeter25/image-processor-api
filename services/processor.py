@@ -29,14 +29,14 @@ class ImageProcessor:
         Extract metadata from image file.
         
         Args:
-            filepath: Path to the image file
+            filepath: Path to the image file or BytesIO object
             
         Returns:
             dict: Image metadata (format, width, height, size)
         """
         with Image.open(filepath) as img:
             return {
-                'format': img.format.lower(),
+                'format': img.format.lower() if img.format else 'unknown',
                 'width': img.width,
                 'height': img.height,
                 'size': img.size

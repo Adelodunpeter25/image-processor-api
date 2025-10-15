@@ -44,7 +44,18 @@ def upload_image():
         
         # Extract image metadata
         try:
-            info = ImageProcessor.get_image_info(filepath)
+            # For URLs, download and get info from the file object
+            if filepath.startswith('http'):
+                import requests
+                from io import BytesIO
+                response = requests.get(filepath)
+                file_obj = BytesIO(response.content)
+                info = ImageProcessor.get_image_info(file_obj)
+                file_size = len(response.content)
+            else:
+                # For local files
+                info = ImageProcessor.get_image_info(filepath)
+                file_size = os.path.getsize(filepath)
         except Exception as e:
             storage.delete_file(filepath)
             return jsonify({'error': 'Invalid image file', 'message': str(e)}), 400
@@ -55,7 +66,7 @@ def upload_image():
             filename=filename,
             original_path=filepath,
             format=info['format'],
-            size=os.path.getsize(filepath),
+            size=file_size,
             width=info['width'],
             height=info['height']
         )
