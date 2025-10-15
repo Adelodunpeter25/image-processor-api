@@ -158,7 +158,7 @@ def test_9_transform_rotate():
     )
     
     assert response.status_code == 200, f"Rotate failed: {response.text}"
-    print(f"✅ Rotate successful")
+    print("✅ Rotate successful")
 
 def test_10_transform_watermark():
     """Test image transformation - watermark."""
@@ -170,7 +170,7 @@ def test_10_transform_watermark():
     )
     
     assert response.status_code == 200, f"Watermark failed: {response.text}"
-    print(f"✅ Watermark successful")
+    print("✅ Watermark successful")
 
 def test_11_thumbnail():
     """Test thumbnail generation."""
@@ -286,7 +286,7 @@ def test_17_delete_image():
     )
     
     assert response.status_code == 200, f"Delete failed: {response.text}"
-    print(f"✅ Image deleted successfully")
+    print("✅ Image deleted successfully")
 
 if __name__ == '__main__':
     print("="*60)

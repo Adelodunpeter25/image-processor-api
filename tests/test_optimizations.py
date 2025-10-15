@@ -9,7 +9,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from main import app, db
 from models.user import User
-from models.image import Image as ImageModel
 
 class TestOptimizations:
     """Test suite for performance optimizations."""

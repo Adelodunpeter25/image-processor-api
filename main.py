@@ -5,7 +5,6 @@ A Flask-based image processing service with user authentication,
 image upload, and transformation capabilities.
 """
 import os
-import threading
 from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
 from flask_swagger_ui import get_swaggerui_blueprint

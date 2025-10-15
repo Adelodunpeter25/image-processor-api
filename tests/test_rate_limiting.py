@@ -30,7 +30,7 @@ def test_rate_limiting():
         return
     
     token = response.json()['access_token']
-    print(f"✅ Logged in")
+    print("✅ Logged in")
     
     # Make requests until rate limited
     print("\n2. Making requests until rate limited...")

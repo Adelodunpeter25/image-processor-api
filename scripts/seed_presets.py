@@ -4,9 +4,9 @@ from dotenv import load_dotenv
 # Load environment variables FIRST
 load_dotenv()
 
-from main import app, db
-from models.preset import Preset
-from models.user import User
+from main import app, db  # noqa: E402
+from models.preset import Preset  # noqa: E402
+from models.user import User  # noqa: E402
 
 # Popular social media presets
 POPULAR_PRESETS = [

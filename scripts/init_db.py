@@ -1,15 +1,11 @@
 """Initialize database tables."""
-import os
 from dotenv import load_dotenv
 
 # Load environment variables first
 load_dotenv()
 
-from main import app
-from models.user import db
-from models.api_key import APIKey
-from models.preset import Preset
-from models.image import Image
+from main import app  # noqa: E402
+from models.user import db  # noqa: E402
 
 print(f"Database URL: {app.config['SQLALCHEMY_DATABASE_URI']}")
 

@@ -2,7 +2,6 @@
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 import io
 import hashlib
-from functools import lru_cache
 
 # In-memory cache for transformed images (max 100 items)
 _transform_cache = {}

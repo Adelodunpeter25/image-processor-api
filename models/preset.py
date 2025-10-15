@@ -1,7 +1,6 @@
 """Preset model for storing transformation presets."""
 from models.user import db
 from datetime import datetime
-import json
 
 class Preset(db.Model):
     """Preset model for reusable transformations."""

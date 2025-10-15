@@ -23,7 +23,7 @@ if response.status_code != 200:
     exit(1)
 
 token = response.json()['access_token']
-print(f"✅ Logged in")
+print("✅ Logged in")
 
 # List API keys
 print("\nFetching API keys...")
@@ -48,7 +48,7 @@ for key in api_keys:
     )
     
     if response.status_code == 200:
-        print(f"  ✅ Deleted")
+        print("  ✅ Deleted")
     else:
         print(f"  ❌ Failed: {response.text}")
 
