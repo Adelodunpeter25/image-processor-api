@@ -5,7 +5,6 @@ This directory contains tests for the Image Processor API.
 ## Test Files
 
 - `test_thumbnail.py` - Tests thumbnail generation with various sizes
-- `test_bg_removal.py` - Tests AI-powered background removal
 - `test_batch_processing.py` - Tests batch transformation, background removal, and ZIP creation
 - `test_supabase_upload.py` - Tests Supabase storage upload functionality
 
@@ -21,9 +20,6 @@ python run_tests.py
 ```bash
 # Test thumbnail generation
 python test_thumbnail.py
-
-# Test background removal
-python test_bg_removal.py
 
 # Test batch processing
 python test_batch_processing.py

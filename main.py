@@ -2,7 +2,7 @@
 Image Processor API - Main application entry point.
 
 A Flask-based image processing service with user authentication,
-image upload, background removal and transformation capabilities.
+image upload, and transformation capabilities.
 """
 import os
 import threading
@@ -31,16 +31,6 @@ app.config.from_object(Config)
 # Get environment
 ENV = os.getenv('FLASK_ENV', 'development')
 DEBUG = ENV == 'development'
-
-# Preload rembg in background to avoid first-request delay
-def preload_rembg():
-    """Preload rembg model in background thread."""
-    try:
-        from rembg import remove
-    except Exception:
-        pass
-
-threading.Thread(target=preload_rembg, daemon=True).start()
 
 # Initialize CORS
 CORS(app, resources={
@@ -81,7 +71,7 @@ def home():
     """Serve as the home route."""
     return jsonify({
         "title": "Image Processor API", 
-        "description": "API for image upload, background removal, transformation, and management",
+        "description": "API for image upload, transformation, and management",
         "documentation": "/docs"
     })
 
