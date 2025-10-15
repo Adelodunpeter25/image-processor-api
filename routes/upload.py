@@ -50,6 +50,7 @@ def upload_image():
                 from io import BytesIO
                 response = requests.get(filepath)
                 file_obj = BytesIO(response.content)
+                file_obj.seek(0)  # Ensure we're at the start
                 info = ImageProcessor.get_image_info(file_obj)
                 file_size = len(response.content)
             else:
