@@ -49,8 +49,16 @@ def upload_image():
                 import requests
                 from io import BytesIO
                 response = requests.get(filepath)
+                if response.status_code != 200:
+                    raise Exception(f"Failed to download image: {response.status_code}")
+                
                 file_obj = BytesIO(response.content)
-                file_obj.seek(0)  # Ensure we're at the start
+                file_obj.seek(0)
+                
+                # Verify we have content
+                if len(response.content) == 0:
+                    raise Exception("Downloaded file is empty")
+                
                 info = ImageProcessor.get_image_info(file_obj)
                 file_size = len(response.content)
             else:
@@ -58,6 +66,8 @@ def upload_image():
                 info = ImageProcessor.get_image_info(filepath)
                 file_size = os.path.getsize(filepath)
         except Exception as e:
+            print(f"Error extracting image info: {e}")
+            print(f"Filepath: {filepath}")
             storage.delete_file(filepath)
             return jsonify({'error': 'Invalid image file', 'message': str(e)}), 400
         
