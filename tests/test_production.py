@@ -202,7 +202,7 @@ def test_12_batch_upload():
     
     assert response.status_code == 201, f"Batch upload failed: {response.text}"
     data = response.json()
-    print(f"✅ Batch upload successful - {data['uploaded']} images")
+    print(f"✅ Batch upload successful - {len(data['images'])} images")
 
 def test_13_list_presets():
     """Test listing presets."""
@@ -221,11 +221,14 @@ def test_14_create_preset():
     """Test creating a preset."""
     print("\n14. Testing Create Preset...")
     
+    import time
+    unique_name = f"Test Preset {int(time.time())}"
+    
     response = requests.post(
         f"{API_URL}/presets",
         headers={"Authorization": f"Bearer {token}"},
         json={
-            "name": "Test Preset",
+            "name": unique_name,
             "description": "Test preset for production",
             "width": 500,
             "height": 500,
@@ -242,11 +245,11 @@ def test_15_rate_limiting():
     """Test rate limiting."""
     print("\n15. Testing Rate Limiting...")
     
-    # Make multiple rapid requests
+    # Make requests until rate limited
     success_count = 0
     rate_limited = False
     
-    for i in range(60):
+    for i in range(200):  # Try up to 200 requests
         response = requests.get(
             f"{API_URL}/images",
             headers={"Authorization": f"Bearer {token}"}
@@ -255,12 +258,13 @@ def test_15_rate_limiting():
             success_count += 1
         elif response.status_code == 429:
             rate_limited = True
+            print(f"✅ Rate limiting working - Limited after {success_count} successful requests")
             break
     
-    if rate_limited:
-        print(f"✅ Rate limiting working - Limited after {success_count} requests")
-    else:
-        print(f"⚠️  Rate limiting not triggered in 60 requests")
+    if not rate_limited:
+        print(f"⚠️  Rate limiting not triggered after {success_count} requests")
+    
+    assert rate_limited, "Rate limiting should have been triggered"
 
 def test_16_health_check():
     """Test health check endpoint."""
