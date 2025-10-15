@@ -42,6 +42,9 @@ def upload_image():
         storage = StorageService(app.config['UPLOAD_FOLDER'])
         filepath, filename = storage.save_file(file, user.id)
         
+        print(f"File uploaded - Path/URL: {filepath}")
+        print(f"Filename: {filename}")
+        
         # Extract image metadata
         try:
             # For URLs, download and get info from the file object
@@ -50,16 +53,21 @@ def upload_image():
                 from io import BytesIO
                 import time
                 
+                print(f"Attempting to download from: {filepath}")
+                
                 # Retry logic for Supabase (file might not be immediately available)
                 max_retries = 3
                 for attempt in range(max_retries):
                     response = requests.get(filepath)
+                    print(f"Attempt {attempt + 1}: Status {response.status_code}")
                     if response.status_code == 200:
                         break
                     if attempt < max_retries - 1:
                         time.sleep(0.5)  # Wait 500ms before retry
                 
                 if response.status_code != 200:
+                    print(f"Response headers: {response.headers}")
+                    print(f"Response body: {response.text[:200]}")
                     raise Exception(f"Failed to download image: {response.status_code}")
                 
                 file_obj = BytesIO(response.content)
