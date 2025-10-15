@@ -1,6 +1,6 @@
 # Image Processor API
 
-A Flask-based image processing service with user authentication, image upload, background removal, and transformation capabilities.
+A Flask-based image processing service with user authentication, image upload, and transformation capabilities.
 
 ## Features
 
@@ -16,7 +16,6 @@ A Flask-based image processing service with user authentication, image upload, b
   - Grayscale filter
   - Quality enhancement (sharpness, contrast, color)
   - Size-based compression
-- **Background Removal**: AI-powered background removal
 - **Configurable**: Environment-based configuration support
 - **Thumbnail Generation**: Custom size thumbnails
 - **Preset Transformations**: Save and reuse transformation settings
@@ -159,11 +158,6 @@ curl "http://localhost:5000/api/images/1/thumbnail?size=200x200" \
   -H "Authorization: Bearer <token>" \
   --output thumbnail.jpg
 
-# Remove background
-curl "http://localhost:5000/api/images/1/remove-background?format=png&download=true" \
-  -H "Authorization: Bearer <token>" \
-  --output no_background.png
-
 # Batch upload multiple images
 curl -X POST http://localhost:5000/api/batch/upload \
   -H "Authorization: Bearer <token>" \
@@ -177,13 +171,6 @@ curl -X POST http://localhost:5000/api/batch/transform \
   -H "Content-Type: application/json" \
   -d '{"image_ids": [1, 2, 3], "width": 300, "format": "webp"}' \
   --output transformed.zip
-
-# Batch remove background (returns ZIP)
-curl -X POST http://localhost:5000/api/batch/remove-background \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"image_ids": [1, 2, 3], "format": "png"}' \
-  --output no_backgrounds.zip
 
 # Create a preset
 curl -X POST http://localhost:5000/api/presets \

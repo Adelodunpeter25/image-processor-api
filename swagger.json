@@ -251,22 +251,6 @@
         }
       }
     },
-    "/images/{image_id}/remove-background": {
-      "get": {
-        "tags": ["Images"],
-        "summary": "Remove background from image",
-        "security": [{ "Bearer": [] }, { "ApiKey": [] }],
-        "parameters": [
-          { "in": "path", "name": "image_id", "type": "integer", "required": true },
-          { "in": "query", "name": "format", "type": "string", "enum": ["png", "webp"] },
-          { "in": "query", "name": "download", "type": "boolean", "default": false }
-        ],
-        "responses": {
-          "200": { "description": "Image with background removed" },
-          "404": { "description": "Image not found" }
-        }
-      }
-    },
     "/images": {
       "get": {
         "tags": ["Images"],
@@ -319,27 +303,6 @@
         ],
         "responses": {
           "200": {"description": "ZIP file with transformed images"},
-          "400": {"description": "Invalid request"}
-        }
-      }
-    },
-    "/batch/remove-background": {
-      "post": {
-        "tags": ["Batch Processing"],
-        "summary": "Remove background from multiple images",
-        "security": [{"Bearer": []}, {"ApiKey": []}],
-        "parameters": [
-          {"in": "body", "name": "body", "required": true, "schema": {
-            "type": "object",
-            "required": ["image_ids"],
-            "properties": {
-              "image_ids": {"type": "array", "items": {"type": "integer"}, "description": "Array of image IDs (max 10)"},
-              "format": {"type": "string", "enum": ["png", "webp"], "default": "png"}
-            }
-          }}
-        ],
-        "responses": {
-          "200": {"description": "ZIP file with background removed images"},
           "400": {"description": "Invalid request"}
         }
       }

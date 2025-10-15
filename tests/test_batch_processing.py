@@ -64,56 +64,6 @@ def test_batch_transform():
         print(f"❌ Test failed: {str(e)}")
         raise
 
-def test_batch_background_removal():
-    """Test removing background from multiple images."""
-    print("\nTesting Batch Background Removal...")
-    
-    try:
-        # Create test images with subjects
-        test_images = []
-        for i in range(3):
-            img = Image.new('RGB', (150, 150), color='white')
-            from PIL import ImageDraw
-            draw = ImageDraw.Draw(img)
-            # Draw different shapes
-            if i == 0:
-                draw.ellipse([25, 25, 125, 125], fill='red')
-            elif i == 1:
-                draw.rectangle([25, 25, 125, 125], fill='blue')
-            else:
-                draw.polygon([(75, 25), (125, 125), (25, 125)], fill='green')
-            
-            buffer = BytesIO()
-            img.save(buffer, format='PNG')
-            buffer.seek(0)
-            test_images.append(buffer)
-        
-        # Remove background from each
-        results = []
-        for i, test_image in enumerate(test_images):
-            print(f"  Processing image {i+1}...")
-            buffer, output_format = ImageProcessor.remove_background(test_image, format='png')
-            results.append((buffer, output_format))
-        
-        print(f"✅ Processed {len(results)} images")
-        
-        # Verify all results
-        for i, (buffer, output_format) in enumerate(results):
-            assert output_format == 'png', f"Image {i+1}: Expected PNG format"
-            assert len(buffer.getvalue()) > 0, f"Image {i+1}: Empty buffer"
-            
-            # Verify transparency
-            buffer.seek(0)
-            img = Image.open(buffer)
-            assert img.mode == 'RGBA', f"Image {i+1}: Expected RGBA mode"
-            print(f"  Image {i+1}: {img.size}, {img.mode}, {len(buffer.getvalue())} bytes")
-        
-        print("✅ Batch background removal test passed!")
-        
-    except Exception as e:
-        print(f"❌ Test failed: {str(e)}")
-        raise
-
 def test_batch_zip_creation():
     """Test creating ZIP file with multiple processed images."""
     print("\nTesting ZIP Creation...")
@@ -167,7 +117,6 @@ def test_batch_zip_creation():
 
 if __name__ == '__main__':
     test_batch_transform()
-    test_batch_background_removal()
     test_batch_zip_creation()
     print("\n" + "="*60)
     print("All batch processing tests passed! ✅")

@@ -17,7 +17,6 @@ def run_all_tests():
     
     tests = [
         ('Thumbnail Generation', 'test_thumbnail'),
-        ('Background Removal', 'test_bg_removal'),
         ('Batch Processing', 'test_batch_processing'),
         ('Supabase Upload', 'test_supabase_upload'),
     ]
@@ -34,11 +33,8 @@ def run_all_tests():
             module = __import__(test_module)
             if test_module == 'test_thumbnail':
                 module.test_thumbnail_generation()
-            elif test_module == 'test_bg_removal':
-                module.test_background_removal()
             elif test_module == 'test_batch_processing':
                 module.test_batch_transform()
-                module.test_batch_background_removal()
                 module.test_batch_zip_creation()
             elif test_module == 'test_supabase_upload':
                 module.test_supabase_upload()
