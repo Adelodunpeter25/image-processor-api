@@ -78,10 +78,7 @@ def list_presets():
         
         # Get user's own presets + public presets from others
         presets = Preset.query.filter(
-            db.or_(
-                Preset.user_id == user.id,
-                Preset.is_public == True
-            )
+            (Preset.user_id == user.id) | (Preset.is_public == True)
         ).order_by(Preset.created_at.desc()).all()
         
         return jsonify({

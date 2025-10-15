@@ -1,4 +1,9 @@
 """Seed database with popular preset transformations."""
+from dotenv import load_dotenv
+
+# Load environment variables FIRST
+load_dotenv()
+
 from main import app, db
 from models.preset import Preset
 from models.user import User
@@ -99,6 +104,8 @@ POPULAR_PRESETS = [
 ]
 
 with app.app_context():
+    print(f"Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
+    
     # Get first user (or create a system user)
     user = User.query.first()
     
