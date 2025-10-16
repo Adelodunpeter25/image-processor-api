@@ -15,7 +15,7 @@ class APIKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     key_hash = db.Column(db.String(255), nullable=False)
-    prefix = db.Column(db.String(20), nullable=False)  # For display (e.g., "sk_live_...abc")
+    prefix = db.Column(db.String(20), nullable=True)  # Optional for display
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_used = db.Column(db.DateTime)

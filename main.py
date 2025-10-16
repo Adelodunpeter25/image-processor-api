@@ -5,12 +5,16 @@ A Flask-based image processing service with user authentication,
 image upload, and transformation capabilities.
 """
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS
 from flask_compress import Compress
-from dotenv import load_dotenv
 from config import Config
 from models.user import db
 # Register blueprints
@@ -21,9 +25,6 @@ from routes.batch import batch_bp
 from routes.api_keys import api_keys_bp
 from routes.presets import presets_bp
 from routes.info import info_bp
-
-# Load environment variables
-load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(Config)

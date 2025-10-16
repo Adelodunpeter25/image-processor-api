@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required
 from models.user import db
 from models.api_key import APIKey
 from middleware.auth import get_current_user
+from middleware.api_auth import api_key_or_jwt_required
 import secrets
 
 api_keys_bp = Blueprint('api_keys', __name__)
@@ -64,7 +65,7 @@ def create_api_key():
         return jsonify({'error': 'Failed to create API key', 'message': str(e)}), 500
 
 @api_keys_bp.route('', methods=['GET'])
-@jwt_required()
+@api_key_or_jwt_required
 def list_api_keys():
     """List all API keys for the authenticated user."""
     try:

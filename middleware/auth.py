@@ -24,24 +24,22 @@ def get_current_user():
     return User.query.get(int(user_id))
 
 def get_user_from_api_key(api_key):
-    """Get user from API key and track usage - optimized."""
+    """Get user from API key and track usage."""
     if not api_key or not api_key.startswith('sk_live_'):
         return None
     
-    # Extract prefix for faster lookup (first 13 chars: "sk_live_" + first 5 of hash)
-    prefix = f"{api_key[:10]}...{api_key[-3:]}"
+    # Find all active keys and check each one
+    active_keys = APIKey.query.filter_by(is_active=True).all()
     
-    # Find key by prefix first (indexed lookup)
-    key = APIKey.query.filter_by(prefix=prefix, is_active=True).first()
-    
-    if key and key.check_key(api_key):
-        # Update usage stats asynchronously (don't block request)
-        key.increment_usage()
-        try:
-            db.session.commit()
-        except Exception:
-            db.session.rollback()  # Don't fail request if usage tracking fails
-        
-        return User.query.get(key.user_id)
+    for key in active_keys:
+        if key.check_key(api_key):
+            # Update usage stats
+            key.increment_usage()
+            try:
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+            
+            return User.query.get(key.user_id)
     
     return None
